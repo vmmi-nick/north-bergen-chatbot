@@ -40,7 +40,7 @@ function detectLang(question, requested) {
   const q = String(question || '');
   if (/[¿¡áéíóúñ]/i.test(q)) return 'es';
   const n = ' ' + normalize(q) + ' ';
-  const esHints = [' quien ', ' cuando ', ' donde ', ' como ', ' acta ', ' alcalde ', ' reunion ', ' basura ', ' biblioteca ', ' multa ', ' permiso ', ' impuesto ', ' discapacitado', ' estacionamiento ', ' piscina ', ' parque '];
+  const esHints = [' quien ', ' cuando ', ' donde ', ' como ', ' acta ', ' alcalde ', ' reunion ', ' basura ', ' biblioteca ', ' multa ', ' permiso ', ' impuesto ', ' discapacitado', ' estacionamiento ', ' piscina ', ' parque ', ' farola ', ' luz '];
   return esHints.some((h) => n.includes(h)) ? 'es' : 'en';
 }
 
