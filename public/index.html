@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>North Bergen Constituent Chatbot</title>
+<style>
+  :root{
+    --burgundy:#6f1d2f; --burgundy-dark:#521423; --gold:#c9a227; --gold-soft:#f3e5bb;
+    --bg:#faf7f2; --panel:#ffffff; --text:#26221f; --muted:#6d655e; --border:#e5ddd2;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#1d1917; --panel:#2a2422; --text:#f2ece6; --muted:#b8aca0; --border:#453b36; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Georgia,'Times New Roman',serif;background:var(--bg);color:var(--text)}
+  header{background:var(--burgundy);color:#fff;border-top:6px solid var(--gold);padding:20px 16px 16px}
+  header h1{margin:0;font-size:1.35rem;letter-spacing:.02em}
+  header p{margin:6px 0 0;font-size:.92rem;color:var(--gold-soft)}
+  .wrap{max-width:760px;margin:0 auto;padding:16px}
+  .toolbar{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+  .langbtn{background:var(--panel);color:var(--text);border:1px solid var(--border);border-radius:999px;padding:6px 14px;cursor:pointer;font-family:inherit}
+  .langbtn.active{background:var(--burgundy);color:#fff;border-color:var(--burgundy)}
+  .note{font-size:.82rem;color:var(--muted)}
+  #chat{display:flex;flex-direction:column;gap:12px;margin-bottom:12px}
+  .msg{max-width:88%;padding:12px 14px;border-radius:14px;line-height:1.5;font-size:.98rem;white-space:normal}
+  .msg.user{align-self:flex-end;background:var(--burgundy);color:#fff;border-bottom-right-radius:4px}
+  .msg.bot{align-self:flex-start;background:var(--panel);border:1px solid var(--border);border-bottom-left-radius:4px}
+  .msg.bot .lead{font-weight:bold}
+  .msg.bot ul{margin:8px 0 0;padding-left:20px}
+  .contact{margin-top:12px;border-top:2px solid var(--gold);padding-top:8px;font-size:.92rem}
+  .contact .ctitle{font-variant:small-caps;letter-spacing:.06em;color:var(--burgundy);font-weight:bold}
+  @media (prefers-color-scheme: dark){ .contact .ctitle{color:var(--gold)} }
+  .contact div{margin-top:3px}
+  .source{margin-top:10px;font-size:.82rem;color:var(--muted)}
+  a{color:var(--burgundy)}
+  @media (prefers-color-scheme: dark){ a{color:var(--gold-soft)} }
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 14px}
+  .chip{background:var(--panel);border:1px solid var(--gold);color:var(--text);border-radius:999px;padding:7px 13px;cursor:pointer;font-family:inherit;font-size:.9rem}
+  .chip:hover{background:var(--gold-soft);color:#26221f}
+  form{display:flex;gap:8px}
+  input[type=text]{flex:1;padding:12px;border:1px solid var(--border);border-radius:10px;font-family:inherit;font-size:1rem;background:var(--panel);color:var(--text)}
+  button.send{background:var(--burgundy);color:#fff;border:none;border-radius:10px;padding:12px 20px;cursor:pointer;font-family:inherit;font-size:1rem}
+  button.send:disabled{opacity:.55}
+  footer{font-size:.8rem;color:var(--muted);text-align:center;padding:10px 16px 26px}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="title">North Bergen Constituent Chatbot</h1>
+  <p id="subtitle">Township of North Bergen, New Jersey. Answers from official township sources, in English and Spanish.</p>
+</header>
+<div class="wrap">
+  <div class="toolbar">
+    <button class="langbtn active" id="btn-en" type="button">English</button>
+    <button class="langbtn" id="btn-es" type="button">Español</button>
+    <span class="note" id="disclaimer">Guidance only, not official notice. In an emergency call 911. This chat does not collect personal information.</span>
+  </div>
+  <div id="chat"></div>
+  <div class="chips" id="chips"></div>
+  <form id="askform">
+    <input type="text" id="q" autocomplete="off" placeholder="Ask about township services...">
+    <button class="send" id="sendbtn" type="submit">Ask</button>
+  </form>
+</div>
+<footer id="foot">Prototype backend. Verified township index last checked November 20, 2026.</footer>
+<script>
+  var lang = 'en';
+  var STR = {
+    en: {
+      title: 'North Bergen Constituent Chatbot',
+      subtitle: 'Township of North Bergen, New Jersey. Answers from official township sources, in English and Spanish.',
+      disclaimer: 'Guidance only, not official notice. In an emergency call 911. This chat does not collect personal information.',
+      placeholder: 'Ask about township services...', ask: 'Ask', contact: 'Contact',
+      source: 'Source', thinking: 'Checking the township sources...',
+      greeting: 'Hello. I can help you find township services, forms, phone numbers and meeting dates. Ask me a question, or tap one of the topics below.',
+      chips: ['When is the next commissioners meeting?', 'Who is the mayor?', 'How do I get a handicap space in front of my home?', 'How do I get a birth certificate?', 'Senior programs and transportation', 'Garbage and recycling']
+    },
+    es: {
+      title: 'Chat para Residentes de North Bergen',
+      subtitle: 'Municipio de North Bergen, New Jersey. Respuestas de fuentes oficiales del municipio, en inglés y español.',
+      disclaimer: 'Solo orientación, no es un aviso oficial. En una emergencia llame al 911. Este chat no recopila información personal.',
+      placeholder: 'Pregunte sobre los servicios del municipio...', ask: 'Preguntar', contact: 'Contacto',
+      source: 'Fuente', thinking: 'Consultando las fuentes del municipio...',
+      greeting: 'Hola. Puedo ayudarle a encontrar servicios del municipio, formularios, números de teléfono y fechas de reuniones. Hágame una pregunta o toque uno de los temas abajo.',
+      chips: ['¿Cuándo es la próxima reunión de comisionados?', '¿Quién es el alcalde?', '¿Cómo consigo un espacio para discapacitados frente a mi casa?', '¿Cómo obtengo un acta de nacimiento?', 'Programas y transporte para personas mayores', 'Basura y reciclaje']
+    }
+  };
+  var chat = document.getElementById('chat');
+  var chipsEl = document.getElementById('chips');
+
+  function esc(s){ var d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+  function addUser(text){
+    var div=document.createElement('div'); div.className='msg user'; div.textContent=text;
+    chat.appendChild(div); window.scrollTo(0, document.body.scrollHeight);
+  }
+  function addBot(data){
+    var div=document.createElement('div'); div.className='msg bot';
+    var html='<div class="lead">'+esc(data.lead||'')+'</div>';
+    if (data.details && data.details.length){
+      html+='<ul>'+data.details.map(function(d){return '<li>'+esc(d)+'</li>';}).join('')+'</ul>';
+    }
+    if (data.contact && data.contact.length){
+      html+='<div class="contact"><div class="ctitle">'+esc(STR[lang].contact)+'</div>'+
+        data.contact.map(function(c){
+          var v = c.href ? '<a href="'+esc(c.href)+'">'+esc(c.value)+'</a>' : esc(c.value);
+          return '<div>'+esc(c.label)+': '+v+'</div>';
+        }).join('')+'</div>';
+    }
+    if (data.source){
+      html+='<div class="source">'+esc(STR[lang].source)+': <a href="'+esc(data.source)+'" target="_blank" rel="noopener">'+esc(data.sourceLabel||data.source)+'</a></div>';
+    }
+    div.innerHTML=html; chat.appendChild(div); window.scrollTo(0, document.body.scrollHeight);
+  }
+  function renderChips(){
+    chipsEl.innerHTML='';
+    STR[lang].chips.forEach(function(c){
+      var b=document.createElement('button'); b.type='button'; b.className='chip'; b.textContent=c;
+      b.onclick=function(){ ask(c); };
+      chipsEl.appendChild(b);
+    });
+  }
+  function applyLang(){
+    document.getElementById('title').textContent=STR[lang].title;
+    document.getElementById('subtitle').textContent=STR[lang].subtitle;
+    document.getElementById('disclaimer').textContent=STR[lang].disclaimer;
+    document.getElementById('q').placeholder=STR[lang].placeholder;
+    document.getElementById('sendbtn').textContent=STR[lang].ask;
+    document.getElementById('btn-en').classList.toggle('active', lang==='en');
+    document.getElementById('btn-es').classList.toggle('active', lang==='es');
+    renderChips();
+  }
+  function ask(text){
+    var q=(text||'').trim(); if(!q) return;
+    addUser(q);
+    var btn=document.getElementById('sendbtn'); btn.disabled=true;
+    var thinking=document.createElement('div'); thinking.className='msg bot'; thinking.textContent=STR[lang].thinking;
+    chat.appendChild(thinking);
+    fetch('/api/ask', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({question:q, lang:lang}) })
+      .then(function(r){ return r.json(); })
+      .then(function(data){ thinking.remove(); addBot(data); })
+      .catch(function(){ thinking.remove(); addBot({lead: lang==='es' ? 'Lo siento, algo salió mal. Llame a la Mesa de Ayuda del municipio al 201-875-9110.' : 'Sorry, something went wrong. Please call the Township Help Desk at 201-875-9110.', details:[], contact:[]}); })
+      .finally(function(){ btn.disabled=false; });
+  }
+  document.getElementById('askform').addEventListener('submit', function(e){
+    e.preventDefault();
+    var input=document.getElementById('q'); ask(input.value); input.value='';
+  });
+  document.getElementById('btn-en').onclick=function(){ lang='en'; applyLang(); };
+  document.getElementById('btn-es').onclick=function(){ lang='es'; applyLang(); };
+  applyLang();
+  addBot({lead: STR.en.greeting, details:[], contact:[]});
+</script>
+</body>
+</html>
