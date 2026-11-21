@@ -75,7 +75,11 @@ function matchTopic(qn) {
     for (const lang of ['en', 'es']) {
       for (const kw of topic.keywords[lang] || []) {
         const nkw = normalize(kw);
-        if (nkw && qn.includes(nkw)) score += nkw.split(' ').length + 1;
+        // Whole-word / whole-phrase matching only: the question is space-padded
+        // (' ' + normalize(q) + ' '), so padding the keyword the same way means
+        // short keywords like "park" can no longer match inside "parking"
+        // (which used to send parking questions to Parks & Recreation).
+        if (nkw && qn.includes(' ' + nkw + ' ')) score += nkw.split(' ').length + 1;
       }
     }
     if (score > bestScore) { bestScore = score; best = topic; }
