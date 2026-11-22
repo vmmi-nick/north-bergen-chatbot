@@ -120,6 +120,19 @@
   .contact div{margin-top:3px}
   .source{margin-top:10px;padding-top:8px;border-top:1px dashed var(--border);font-size:.82rem;color:var(--muted)}
 
+  /* ---------- report flow ---------- */
+  .chip.report-chip{background:var(--burgundy);border-color:var(--burgundy);color:#fff;font-weight:600}
+  .chip.report-chip:hover{background:var(--burgundy-dark)}
+  .card.report-card-btn{border-top-color:var(--burgundy)}
+  .flowbtns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .chip.chip-cancel{border-color:var(--border);color:var(--muted)}
+  .msg.bot .rc-title{font-family:Georgia,serif;font-weight:700;font-size:1.02rem;color:var(--burgundy)}
+  @media (prefers-color-scheme: dark){ .msg.bot .rc-title{color:var(--gold-soft)} }
+  .report-rows{margin-top:8px}
+  .report-rows div{margin-top:4px}
+  .rc-call{margin-top:12px;border-top:2px solid var(--gold);padding-top:8px}
+  .rc-note{margin-top:10px;padding-top:8px;border-top:1px dashed var(--border);font-size:.9rem;color:var(--muted)}
+
   /* ---------- sticky composer ---------- */
   .composer{
     position:sticky;bottom:0;z-index:15;
@@ -230,7 +243,60 @@
         { title: 'Senior Services', desc: 'Programs and transportation for seniors.', q: 'Senior programs and transportation' },
         { title: 'Garbage & Recycling', desc: 'Pickup schedules and rules.', q: 'Garbage and recycling' }
       ],
-      chips: ['When is the next commissioners meeting?', 'Who is the mayor?', 'How do I get a handicap space in front of my home?', 'How do I get a birth certificate?', 'Senior programs and transportation', 'Garbage and recycling']
+      chips: ['When is the next commissioners meeting?', 'Who is the mayor?', 'How do I get a handicap space in front of my home?', 'How do I get a birth certificate?', 'Senior programs and transportation', 'Garbage and recycling'],
+      report: {
+        entryChip: 'Report an issue',
+        cardTitle: 'Report an Issue',
+        cardDesc: 'Prepare a report to call in to the township.',
+        safety: 'I can help you prepare a report to call in. If this is an emergency, call 911 instead of using this form.',
+        askType: 'What kind of issue is it? Tap one, or tap Cancel to stop.',
+        types: [
+          { key: 'pothole', label: 'Pothole' },
+          { key: 'streetlight', label: 'Streetlight out' },
+          { key: 'flooding', label: 'Flooding or sewer backup' },
+          { key: 'missed', label: 'Missed trash pickup' },
+          { key: 'bulk', label: 'Bulk pickup' },
+          { key: 'illegal', label: 'Illegal parking or abandoned vehicle' },
+          { key: 'weeds', label: 'Overgrown weeds or neglected property' },
+          { key: 'noise', label: 'Noise complaint' },
+          { key: 'speeding', label: 'Speeding' },
+          { key: 'other', label: 'Other' }
+        ],
+        depts: {
+          pothole: { label: 'Public Works (DPW), street repairs', phone: '201-392-2128' },
+          streetlight: { label: 'Street Light Requests, Town Hall', phone: '201-392-2000' },
+          flooding: { label: 'Sewerage & Storm Systems (Township)', phone: '201-392-2128' },
+          missed: { label: 'Public Works (DPW)', phone: '201-392-2071' },
+          bulk: { label: 'Public Works (DPW)', phone: '201-392-2128' },
+          illegal: { label: 'Police, non-emergency', phone: '201-392-2100' },
+          weeds: { label: 'Health Department', phone: '201-392-2084' },
+          noise: { label: 'Police, non-emergency', phone: '201-392-2100' },
+          speeding: { label: 'Police, non-emergency', phone: '201-392-2100' },
+          other: { label: 'Township Help Desk', phone: '201-875-9110' }
+        },
+        askAddress: 'What is the exact street address where the problem is? If it is at an intersection, give both street names.',
+        askCross: 'What is the nearest cross street?',
+        askPole: 'If the pole has a number marked on it, type it here. Tap Skip if there is no number or you do not know it.',
+        askDesc: 'Briefly describe what is happening, and since when. For example: "The light has been out for three nights."',
+        askContact: 'Optional: type your name and phone number if you want the department to call you back. It is only written into the summary you take with you; it is not sent anywhere. Tap Skip to leave it out.',
+        skip: 'Skip',
+        cancel: 'Cancel report',
+        cancelled: 'Report stopped. Nothing was sent or saved.',
+        typeRetry: 'Please tap one of the issue types above, or tap Cancel report to stop.',
+        summaryTitle: 'Your prepared report',
+        copyHead: 'Prepared report - Township of North Bergen',
+        fIssue: 'Issue',
+        fLocation: 'Location',
+        fCross: 'Nearest cross street',
+        fPole: 'Pole number',
+        fDesc: 'Description',
+        fContact: 'Name / phone',
+        callLine: 'Call to file this report:',
+        notSent: 'This assistant does not send or save your report. Call the number above and read or share this summary; your report is only filed once you contact the township.',
+        copy: 'Copy summary',
+        copied: 'Copied.',
+        copyFail: 'Copy failed'
+      }
     },
     es: {
       title: 'Chat para Residentes de North Bergen',
@@ -251,7 +317,60 @@
         { title: 'Servicios para Personas Mayores', desc: 'Programas y transporte para personas mayores.', q: 'Programas y transporte para personas mayores' },
         { title: 'Basura y Reciclaje', desc: 'Horarios y reglas de recogida.', q: 'Basura y reciclaje' }
       ],
-      chips: ['¿Cuándo es la próxima reunión de comisionados?', '¿Quién es el alcalde?', '¿Cómo consigo un espacio para discapacitados frente a mi casa?', '¿Cómo obtengo un acta de nacimiento?', 'Programas y transporte para personas mayores', 'Basura y reciclaje']
+      chips: ['¿Cuándo es la próxima reunión de comisionados?', '¿Quién es el alcalde?', '¿Cómo consigo un espacio para discapacitados frente a mi casa?', '¿Cómo obtengo un acta de nacimiento?', 'Programas y transporte para personas mayores', 'Basura y reciclaje'],
+      report: {
+        entryChip: 'Reportar un problema',
+        cardTitle: 'Reportar un Problema',
+        cardDesc: 'Prepare un reporte para llamar al municipio.',
+        safety: 'Puedo ayudarle a preparar un reporte para llamar. Si esto es una emergencia, llame al 911 en lugar de usar este formulario.',
+        askType: '¿Qué tipo de problema es? Toque una opción, o toque Cancelar para detenerse.',
+        types: [
+          { key: 'pothole', label: 'Bache' },
+          { key: 'streetlight', label: 'Luz de la calle apagada' },
+          { key: 'flooding', label: 'Inundación o atasco de alcantarillado' },
+          { key: 'missed', label: 'No recogieron mi basura' },
+          { key: 'bulk', label: 'Recogida de objetos grandes' },
+          { key: 'illegal', label: 'Estacionamiento ilegal o vehículo abandonado' },
+          { key: 'weeds', label: 'Hierba alta o propiedad descuidada' },
+          { key: 'noise', label: 'Queja por ruido' },
+          { key: 'speeding', label: 'Exceso de velocidad' },
+          { key: 'other', label: 'Otro' }
+        ],
+        depts: {
+          pothole: { label: 'Obras Públicas (DPW), reparaciones de calles', phone: '201-392-2128' },
+          streetlight: { label: 'Solicitudes de Alumbrado Público, Ayuntamiento', phone: '201-392-2000' },
+          flooding: { label: 'Alcantarillado y Sistemas Pluviales (Municipio)', phone: '201-392-2128' },
+          missed: { label: 'Obras Públicas (DPW)', phone: '201-392-2071' },
+          bulk: { label: 'Obras Públicas (DPW)', phone: '201-392-2128' },
+          illegal: { label: 'Policía, línea no urgente', phone: '201-392-2100' },
+          weeds: { label: 'Departamento de Salud', phone: '201-392-2084' },
+          noise: { label: 'Policía, línea no urgente', phone: '201-392-2100' },
+          speeding: { label: 'Policía, línea no urgente', phone: '201-392-2100' },
+          other: { label: 'Mesa de Ayuda del municipio', phone: '201-875-9110' }
+        },
+        askAddress: '¿Cuál es la dirección exacta donde está el problema? Si es en una intersección, dé los nombres de ambas calles.',
+        askCross: '¿Cuál es la calle transversal más cercana?',
+        askPole: 'Si el poste tiene un número marcado, escríbalo aquí. Toque Omitir si no hay número o no lo sabe.',
+        askDesc: 'Describa brevemente qué está pasando y desde cuándo. Por ejemplo: «La luz lleva tres noches apagada».',
+        askContact: 'Opcional: escriba su nombre y número de teléfono si desea que el departamento le devuelva la llamada. Solo se escribe en el resumen que usted se lleva; no se envía a ningún lado. Toque Omitir para dejarlo en blanco.',
+        skip: 'Omitir',
+        cancel: 'Cancelar el reporte',
+        cancelled: 'Reporte detenido. No se envió ni se guardó nada.',
+        typeRetry: 'Toque uno de los tipos de problema de arriba, o toque Cancelar el reporte para detenerse.',
+        summaryTitle: 'Su reporte preparado',
+        copyHead: 'Reporte preparado - Municipio de North Bergen',
+        fIssue: 'Problema',
+        fLocation: 'Ubicación',
+        fCross: 'Calle transversal más cercana',
+        fPole: 'Número del poste',
+        fDesc: 'Descripción',
+        fContact: 'Nombre / teléfono',
+        callLine: 'Llame para presentar este reporte:',
+        notSent: 'Este asistente no envía ni guarda su reporte. Llame al número de arriba y lea o comparta este resumen; su reporte solo se registra cuando usted se comunica con el municipio.',
+        copy: 'Copiar el resumen',
+        copied: 'Copiado.',
+        copyFail: 'No se pudo copiar'
+      }
     }
   };
   var chat = document.getElementById('chat');
@@ -283,6 +402,9 @@
   }
   function renderChips(){
     chipsEl.innerHTML='';
+    var rb=document.createElement('button'); rb.type='button'; rb.className='chip report-chip'; rb.textContent=STR[lang].report.entryChip;
+    rb.onclick=function(){ startReport(); };
+    chipsEl.appendChild(rb);
     STR[lang].chips.forEach(function(c){
       var b=document.createElement('button'); b.type='button'; b.className='chip'; b.textContent=c;
       b.onclick=function(){ ask(c); };
@@ -291,6 +413,13 @@
   }
   function renderCards(){
     cardsEl.innerHTML='';
+    var rc=document.createElement('button'); rc.type='button'; rc.className='card report-card-btn';
+    rc.setAttribute('aria-label', STR[lang].report.cardTitle+': '+STR[lang].report.cardDesc);
+    var rt=document.createElement('span'); rt.className='card-title'; rt.textContent=STR[lang].report.cardTitle;
+    var rd=document.createElement('span'); rd.className='card-desc'; rd.textContent=STR[lang].report.cardDesc;
+    rc.appendChild(rt); rc.appendChild(rd);
+    rc.onclick=function(){ startReport(); };
+    cardsEl.appendChild(rc);
     STR[lang].cards.forEach(function(c){
       var b=document.createElement('button'); b.type='button'; b.className='card';
       b.setAttribute('aria-label', c.title+': '+c.desc);
@@ -319,8 +448,162 @@
     renderChips();
     renderCards();
   }
+  /* ---------- guided report flow (prepare mode) ----------
+     Client-side only: the flow assembles a summary in the chat for the
+     resident to call in. Nothing is sent, saved or stored anywhere. */
+  var reportState = null;
+  function R(){ return STR[lang].report; }
+  function normText(s){ return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
+  function addFlowMsg(text, buttons){
+    var div=document.createElement('div'); div.className='msg bot';
+    div.innerHTML='<div class="lead">'+esc(text)+'</div>';
+    if (buttons && buttons.length){
+      var row=document.createElement('div'); row.className='flowbtns';
+      buttons.forEach(function(b){
+        var btn=document.createElement('button'); btn.type='button';
+        btn.className='chip'+(b.cls ? ' '+b.cls : ''); btn.textContent=b.label;
+        btn.onclick=b.onClick; row.appendChild(btn);
+      });
+      div.appendChild(row);
+    }
+    chat.appendChild(div); window.scrollTo(0, document.body.scrollHeight);
+  }
+  function cancelBtn(){
+    return { label: R().cancel, cls: 'chip-cancel', onClick: function(){ addUser(R().cancel); cancelReport(); } };
+  }
+  function skipBtn(){
+    return { label: R().skip, onClick: function(){ addUser(R().skip); skipStep(); } };
+  }
+  function typeButtons(){
+    return R().types.map(function(t){
+      return { label: t.label, onClick: (function(key){ return function(){ chooseType(key); }; })(t.key) };
+    });
+  }
+  function startReport(){
+    reportState={ step:'type', type:null, address:'', cross:'', pole:'', desc:'', contact:'' };
+    addUser(R().entryChip);
+    var btns=typeButtons(); btns.push(cancelBtn());
+    addFlowMsg(R().safety+' '+R().askType, btns);
+  }
+  function cancelReport(){
+    reportState=null;
+    addBot({lead: R().cancelled, details:[], contact:[]});
+  }
+  function typeLabel(key){
+    var all=STR.en.report.types.concat(STR.es.report.types);
+    for (var i=0;i<R().types.length;i++) if (R().types[i].key===key) return R().types[i].label;
+    for (var j=0;j<all.length;j++) if (all[j].key===key) return all[j].label;
+    return key;
+  }
+  function chooseType(key){
+    if (!reportState) return;
+    reportState.type=key;
+    addUser(typeLabel(key));
+    reportState.step='address';
+    addFlowMsg(R().askAddress, [cancelBtn()]);
+  }
+  function matchTypeText(text){
+    var n=' '+normText(text)+' ';
+    var langs=['en','es'];
+    for (var li=0; li<langs.length; li++){
+      var types=STR[langs[li]].report.types;
+      for (var i=0;i<types.length;i++){
+        if (n.indexOf(' '+normText(types[i].label)+' ')!==-1 || n.indexOf(' '+types[i].key+' ')!==-1) return types[i].key;
+      }
+    }
+    return null;
+  }
+  function advanceAfterCross(){
+    if (reportState.type==='streetlight'){
+      reportState.step='pole';
+      addFlowMsg(R().askPole, [skipBtn(), cancelBtn()]);
+    } else {
+      reportState.step='desc';
+      addFlowMsg(R().askDesc, [cancelBtn()]);
+    }
+  }
+  function skipStep(){
+    if (!reportState) return;
+    if (reportState.step==='pole'){
+      reportState.step='desc';
+      addFlowMsg(R().askDesc, [cancelBtn()]);
+    } else if (reportState.step==='contact'){
+      finishReport();
+    }
+  }
+  function handleFlowText(text){
+    var st=reportState; if (!st) return;
+    addUser(text);
+    if (st.step==='type'){
+      var key=matchTypeText(text);
+      if (key){
+        st.type=key; st.step='address';
+        addFlowMsg(R().askAddress, [cancelBtn()]);
+      } else {
+        var btns=typeButtons(); btns.push(cancelBtn());
+        addFlowMsg(R().typeRetry, btns);
+      }
+    } else if (st.step==='address'){
+      st.address=text; st.step='cross';
+      addFlowMsg(R().askCross, [cancelBtn()]);
+    } else if (st.step==='cross'){
+      st.cross=text; advanceAfterCross();
+    } else if (st.step==='pole'){
+      st.pole=text; st.step='desc';
+      addFlowMsg(R().askDesc, [cancelBtn()]);
+    } else if (st.step==='desc'){
+      st.desc=text; st.step='contact';
+      addFlowMsg(R().askContact, [skipBtn(), cancelBtn()]);
+    } else if (st.step==='contact'){
+      st.contact=text; finishReport();
+    }
+  }
+  function copyText(text, btn){
+    function ok(){ btn.textContent=R().copied; }
+    function fail(){ btn.textContent=R().copyFail; }
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(ok, function(){
+        if (!legacyCopy(text)) fail(); else ok();
+      });
+    } else if (!legacyCopy(text)) fail(); else ok();
+  }
+  function legacyCopy(text){
+    try {
+      var ta=document.createElement('textarea');
+      ta.value=text; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select();
+      var done=document.execCommand('copy');
+      ta.remove(); return done;
+    } catch (e) { return false; }
+  }
+  function finishReport(){
+    var st=reportState; reportState=null;
+    var dept=R().depts[st.type] || R().depts.other;
+    var rows=[[R().fIssue, typeLabel(st.type)], [R().fLocation, st.address], [R().fCross, st.cross]];
+    if (st.pole) rows.push([R().fPole, st.pole]);
+    rows.push([R().fDesc, st.desc]);
+    if (st.contact) rows.push([R().fContact, st.contact]);
+    var div=document.createElement('div'); div.className='msg bot report-card';
+    var html='<div class="rc-title">'+esc(R().summaryTitle)+'</div><div class="report-rows">';
+    rows.forEach(function(r){ html+='<div><strong>'+esc(r[0])+':</strong> '+esc(r[1])+'</div>'; });
+    html+='</div>';
+    html+='<div class="rc-call"><div>'+esc(R().callLine)+'</div><div><strong>'+esc(dept.label)+':</strong> <a href="tel:+1'+dept.phone.replace(/-/g,'')+'">'+esc(dept.phone)+'</a></div></div>';
+    html+='<div class="rc-note">'+esc(R().notSent)+'</div>';
+    div.innerHTML=html;
+    var plain=[R().copyHead]
+      .concat(rows.map(function(r){ return r[0]+': '+r[1]; }))
+      .concat([R().callLine+' '+dept.label+': '+dept.phone, R().notSent])
+      .join('\n');
+    var row=document.createElement('div'); row.className='flowbtns';
+    var cb=document.createElement('button'); cb.type='button'; cb.className='chip'; cb.textContent=R().copy;
+    cb.onclick=function(){ copyText(plain, cb); };
+    row.appendChild(cb); div.appendChild(row);
+    chat.appendChild(div); window.scrollTo(0, document.body.scrollHeight);
+  }
+
   function ask(text){
     var q=(text||'').trim(); if(!q) return;
+    if (reportState){ handleFlowText(q); return; }
     addUser(q);
     var btn=document.getElementById('sendbtn'); btn.disabled=true;
     var thinking=document.createElement('div'); thinking.className='msg bot'; thinking.textContent=STR[lang].thinking;
