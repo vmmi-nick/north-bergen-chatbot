@@ -155,6 +155,31 @@
   button.send:hover{background:var(--burgundy-dark)}
   button.send:disabled{opacity:.55;cursor:default}
 
+  /* ---------- voice (mic input + read-aloud) ---------- */
+  button.mic{
+    background:var(--panel);color:var(--burgundy);border:1px solid var(--gold);border-radius:999px;
+    width:48px;height:48px;padding:0;cursor:pointer;flex:0 0 auto;
+    display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow);
+  }
+  button.mic:hover{background:var(--gold-pale)}
+  button.mic svg{width:20px;height:20px;fill:currentColor}
+  button.mic.listening{background:var(--burgundy);color:#fff;border-color:var(--burgundy);animation:micpulse 1.2s ease-in-out infinite}
+  @keyframes micpulse{0%,100%{box-shadow:0 0 0 0 rgba(111,29,47,.45)}50%{box-shadow:0 0 0 9px rgba(111,29,47,0)}}
+  @media (prefers-color-scheme: dark){
+    button.mic{color:var(--gold-soft)}
+    button.mic.listening{color:#fff}
+  }
+  .voicehint{display:none;font-size:.85rem;color:var(--gold-deep);font-weight:600;margin-top:8px}
+  .voicehint.on{display:block}
+  .speakbtn{
+    margin-top:10px;background:var(--panel);border:1px solid var(--gold);color:var(--text);
+    border-radius:999px;padding:5px 12px;cursor:pointer;font:inherit;font-size:.82rem;
+    display:inline-flex;align-items:center;gap:6px;
+  }
+  .speakbtn:hover{background:var(--gold-pale)}
+  .speakbtn svg{width:14px;height:14px;fill:currentColor;flex:0 0 auto}
+  .speakbtn.speaking{background:var(--burgundy);border-color:var(--burgundy);color:#fff}
+
   /* ---------- footer ---------- */
   footer{
     border-top:1px solid var(--border);margin-top:10px;
@@ -244,6 +269,7 @@
         { title: 'Garbage & Recycling', desc: 'Pickup schedules and rules.', q: 'Garbage and recycling' }
       ],
       chips: ['When is the next commissioners meeting?', 'Who is the mayor?', 'How do I get a handicap space in front of my home?', 'How do I get a birth certificate?', 'Senior programs and transportation', 'Garbage and recycling'],
+      voice: { mic: 'Ask by voice', listening: 'Listening...', listen: 'Listen', stop: 'Stop' },
       report: {
         entryChip: 'Report an issue',
         cardTitle: 'Report an Issue',
@@ -318,6 +344,7 @@
         { title: 'Basura y Reciclaje', desc: 'Horarios y reglas de recogida.', q: 'Basura y reciclaje' }
       ],
       chips: ['¿Cuándo es la próxima reunión de comisionados?', '¿Quién es el alcalde?', '¿Cómo consigo un espacio para discapacitados frente a mi casa?', '¿Cómo obtengo un acta de nacimiento?', 'Programas y transporte para personas mayores', 'Basura y reciclaje'],
+      voice: { mic: 'Preguntar por voz', listening: 'Escuchando...', listen: 'Escuchar', stop: 'Detener' },
       report: {
         entryChip: 'Reportar un problema',
         cardTitle: 'Reportar un Problema',
@@ -398,7 +425,9 @@
     if (data.source){
       html+='<div class="source">'+esc(STR[lang].source)+': <a href="'+esc(data.source)+'" target="_blank" rel="noopener">'+esc(data.sourceLabel||data.source)+'</a></div>';
     }
-    div.innerHTML=html; chat.appendChild(div); window.scrollTo(0, document.body.scrollHeight);
+    div.innerHTML=html;
+    if (voice.synthOK) attachSpeak(div, div.textContent.replace(/\s+/g,' ').trim(), data.lang);
+    chat.appendChild(div); window.scrollTo(0, document.body.scrollHeight);
   }
   function renderChips(){
     chipsEl.innerHTML='';
@@ -445,6 +474,8 @@
     document.getElementById('btn-en').setAttribute('aria-pressed', lang==='en' ? 'true' : 'false');
     document.getElementById('btn-es').setAttribute('aria-pressed', lang==='es' ? 'true' : 'false');
     document.documentElement.lang = lang;
+    if (voice.micBtn) voice.micBtn.setAttribute('aria-label', STR[lang].voice.mic);
+    if (voice.hint) voice.hint.textContent = STR[lang].voice.listening;
     renderChips();
     renderCards();
   }
@@ -598,7 +629,123 @@
     var cb=document.createElement('button'); cb.type='button'; cb.className='chip'; cb.textContent=R().copy;
     cb.onclick=function(){ copyText(plain, cb); };
     row.appendChild(cb); div.appendChild(row);
+    if (voice.synthOK) attachSpeak(div, plain.replace(/\n/g,' '), lang);
     chat.appendChild(div); window.scrollTo(0, document.body.scrollHeight);
+  }
+
+  /* ---------- voice: microphone input + read-aloud ----------
+     Both features are feature-detected. When an API is missing, its
+     control is never created and the page behaves exactly as before.
+     Dictation fills the same composer input and goes through the same
+     form submit path as typing, so it works inside the report flow too. */
+  var MIC_SVG='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2z"/></svg>';
+  var SPEAK_SVG='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg>';
+  var STOP_SVG='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6h12v12H6z"/></svg>';
+  var voice = {
+    SR: window.SpeechRecognition || window.webkitSpeechRecognition || null,
+    synthOK: ('speechSynthesis' in window) && ('SpeechSynthesisUtterance' in window),
+    rec: null, listening: false, micBtn: null, hint: null, speakState: null
+  };
+  function initVoice(){
+    if (!voice.SR) return;
+    var form=document.getElementById('askform');
+    var btn=document.createElement('button');
+    btn.type='button'; btn.id='micbtn'; btn.className='mic';
+    btn.innerHTML=MIC_SVG;
+    btn.setAttribute('aria-label', STR[lang].voice.mic);
+    btn.setAttribute('aria-pressed', 'false');
+    form.insertBefore(btn, document.getElementById('sendbtn'));
+    voice.micBtn=btn;
+    var hint=document.createElement('div');
+    hint.id='voicehint'; hint.className='voicehint'; hint.setAttribute('aria-live', 'polite');
+    hint.textContent=STR[lang].voice.listening;
+    form.parentNode.appendChild(hint);
+    voice.hint=hint;
+    btn.onclick=toggleMic;
+  }
+  function setListening(on){
+    voice.listening=on;
+    if (voice.micBtn){
+      voice.micBtn.classList.toggle('listening', on);
+      voice.micBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+    if (voice.hint) voice.hint.classList.toggle('on', on);
+  }
+  function toggleMic(){
+    if (!voice.SR) return;
+    if (voice.listening && voice.rec){ try { voice.rec.stop(); } catch (e) {} return; }
+    var rec;
+    try { rec=new voice.SR(); } catch (e) { return; }
+    voice.rec=rec;
+    rec.lang = lang==='es' ? 'es-US' : 'en-US';
+    rec.interimResults=false;
+    rec.maxAlternatives=1;
+    rec.onresult=function(ev){
+      var transcript='';
+      for (var i=ev.resultIndex; i<ev.results.length; i++){
+        if (ev.results[i].isFinal) transcript+=ev.results[i][0].transcript;
+      }
+      transcript=transcript.trim();
+      if (!transcript) return;
+      var input=document.getElementById('q');
+      input.value=transcript;
+      var form=document.getElementById('askform');
+      if (form.requestSubmit) form.requestSubmit();
+      else { ask(input.value); input.value=''; }
+    };
+    rec.onend=function(){ setListening(false); };
+    rec.onerror=function(){ setListening(false); };
+    try { rec.start(); setListening(true); } catch (e) { setListening(false); }
+  }
+  function pickVoice(speakLang){
+    try {
+      var voices=window.speechSynthesis.getVoices() || [];
+      var prefix=speakLang, exact=null, any=null;
+      for (var i=0;i<voices.length;i++){
+        var vl=(voices[i].lang || '').toLowerCase().replace(/_/g, '-');
+        if (vl===prefix+'-us'){ exact=voices[i]; break; }
+        if (!any && vl.indexOf(prefix)===0) any=voices[i];
+      }
+      return exact || any;
+    } catch (e) { return null; }
+  }
+  function resetSpeakBtn(btn, speakLang){
+    btn.classList.remove('speaking');
+    btn.innerHTML=SPEAK_SVG+'<span>'+esc(STR[speakLang].voice.listen)+'</span>';
+    btn.setAttribute('aria-label', STR[speakLang].voice.listen);
+  }
+  function stopSpeak(){
+    if (voice.synthOK) { try { window.speechSynthesis.cancel(); } catch (e) {} }
+    if (voice.speakState){
+      var st=voice.speakState; voice.speakState=null;
+      resetSpeakBtn(st.btn, st.lang);
+    }
+  }
+  function attachSpeak(div, text, answerLang){
+    if (!voice.synthOK || !text) return;
+    var speakLang = answerLang==='es' ? 'es' : (answerLang==='en' ? 'en' : lang);
+    var btn=document.createElement('button');
+    btn.type='button'; btn.className='speakbtn';
+    btn.innerHTML=SPEAK_SVG+'<span>'+esc(STR[speakLang].voice.listen)+'</span>';
+    btn.setAttribute('aria-label', STR[speakLang].voice.listen);
+    btn.onclick=function(){
+      if (voice.speakState && voice.speakState.btn===btn){ stopSpeak(); return; }
+      stopSpeak();
+      var utt=new SpeechSynthesisUtterance(text);
+      utt.lang = speakLang==='es' ? 'es-US' : 'en-US';
+      var v=pickVoice(speakLang); if (v) utt.voice=v;
+      voice.speakState={ btn: btn, lang: speakLang };
+      btn.classList.add('speaking');
+      btn.innerHTML=STOP_SVG+'<span>'+esc(STR[speakLang].voice.stop)+'</span>';
+      btn.setAttribute('aria-label', STR[speakLang].voice.stop);
+      utt.onend=utt.onerror=function(){
+        if (voice.speakState && voice.speakState.btn===btn){
+          voice.speakState=null; resetSpeakBtn(btn, speakLang);
+        }
+      };
+      window.speechSynthesis.speak(utt);
+    };
+    div.appendChild(btn);
   }
 
   function ask(text){
@@ -621,6 +768,7 @@
   document.getElementById('btn-en').onclick=function(){ lang='en'; applyLang(); };
   document.getElementById('btn-es').onclick=function(){ lang='es'; applyLang(); };
   applyLang();
+  initVoice();
   addBot({lead: STR.en.greeting, details:[], contact:[]});
 </script>
 </body>
