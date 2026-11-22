@@ -36,16 +36,23 @@ function normalize(s) {
 }
 
 function detectLang(question, requested) {
-  if (requested === 'es' || requested === 'en') return requested;
   const q = String(question || '');
-  if (/[¿¡áéíóúñ]/i.test(q)) return 'es';
   const n = ' ' + normalize(q) + ' ';
   const esHints = [' quien ', ' cuando ', ' donde ', ' como ', ' acta ', ' alcalde ', ' reunion ', ' basura ', ' biblioteca ', ' multa ', ' permiso ', ' impuesto ', ' discapacitado', ' estacionamiento ', ' piscina ', ' parque ', ' farola ', ' luz ',
     // Common unaccented Spanish words (whole-word matches against the padded,
     // accent-stripped question, so unaccented Spanish is still detected).
     // Candidates that are also common standalone English words were excluded.
     ' tengo ', ' quiero ', ' necesito ', ' hay ', ' calle ', ' casa ', ' carro ', ' coche ', ' agua ', ' mi ', ' mis ', ' una ', ' un ', ' el ', ' la ', ' los ', ' las ', ' de ', ' en ', ' para ', ' por ', ' con ', ' sin ', ' cuanto ', ' puedo ', ' esta ', ' este ', ' barrio ', ' vecino ', ' perro ', ' licencia ', ' cita ', ' pagar ', ' debo ', ' hace ', ' hace falta ', ' gracias ', ' hola ', ' buenas ', ' sotano ', ' alcantarillado ', ' inundacion ', ' velocidad ', ' hierba ', ' abandonado '];
-  return esHints.some((h) => n.includes(h)) ? 'es' : 'en';
+  const hintCount = esHints.filter((h) => n.includes(h)).length;
+  // An explicit Spanish toggle is the user's choice and is always respected.
+  if (requested === 'es') return 'es';
+  // Otherwise the question's own language wins when the Spanish signal is
+  // confident: Spanish punctuation or accents, or two or more hint words.
+  // This keeps a Spanish question typed under an English toggle from being
+  // answered in English.
+  if (/[¿¡áéíóúñ]/i.test(q) || hintCount >= 2) return 'es';
+  if (requested === 'en') return 'en';
+  return hintCount > 0 ? 'es' : 'en';
 }
 
 const EMERGENCY = [
