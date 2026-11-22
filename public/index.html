@@ -108,7 +108,7 @@
     box-shadow:var(--shadow);padding:16px 14px;margin-bottom:14px;
   }
   #chat{display:flex;flex-direction:column;gap:12px}
-  .msg{max-width:88%;padding:12px 15px;border-radius:14px;line-height:1.55;font-size:.97rem;overflow-wrap:break-word}
+  .msg{max-width:88%;padding:12px 15px;border-radius:14px;line-height:1.55;font-size:.97rem;overflow-wrap:break-word;white-space:pre-wrap}
   .msg.user{align-self:flex-end;background:var(--burgundy);color:#fff;border-bottom-right-radius:4px}
   .msg.bot{align-self:flex-start;background:var(--panel);border:1px solid var(--border);border-bottom-left-radius:4px;box-shadow:0 1px 2px rgba(74,20,33,.05)}
   .msg.bot .lead{font-weight:600}
@@ -129,7 +129,7 @@
   .msg.bot .rc-title{font-family:Georgia,serif;font-weight:700;font-size:1.02rem;color:var(--burgundy)}
   @media (prefers-color-scheme: dark){ .msg.bot .rc-title{color:var(--gold-soft)} }
   .report-rows{margin-top:8px}
-  .report-rows div{margin-top:4px}
+  .report-rows div{margin-top:4px;white-space:pre-wrap}
   .rc-call{margin-top:12px;border-top:2px solid var(--gold);padding-top:8px}
   .rc-note{margin-top:10px;padding-top:8px;border-top:1px dashed var(--border);font-size:.9rem;color:var(--muted)}
 
@@ -142,12 +142,13 @@
   @media (prefers-color-scheme: dark){
     .composer{background:linear-gradient(to bottom,rgba(28,23,21,0),var(--bg) 30%)}
   }
-  form{display:flex;gap:8px}
-  input[type=text]{
-    flex:1;min-width:0;padding:13px 15px;border:1px solid var(--border);border-radius:999px;
-    font:inherit;font-size:1rem;background:var(--panel);color:var(--text);box-shadow:var(--shadow);
+  form{display:flex;gap:8px;align-items:flex-end}
+  textarea#q{
+    flex:1;min-width:0;padding:13px 15px;border:1px solid var(--border);border-radius:18px;
+    font:inherit;font-size:1rem;line-height:1.45;background:var(--panel);color:var(--text);box-shadow:var(--shadow);
+    resize:none;overflow-y:hidden;min-height:96px;max-height:212px;
   }
-  input[type=text]::placeholder{color:var(--muted)}
+  textarea#q::placeholder{color:var(--muted)}
   button.send{
     background:var(--burgundy);color:#fff;border:0;border-radius:999px;
     padding:13px 24px;cursor:pointer;font:inherit;font-size:1rem;font-weight:600;flex:0 0 auto;
@@ -156,13 +157,15 @@
   button.send:disabled{opacity:.55;cursor:default}
 
   /* ---------- voice (mic input + read-aloud) ---------- */
+  .voicebar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 10px}
+  .voice-enc{font-size:.93rem;color:var(--muted)}
   button.mic{
     background:var(--panel);color:var(--burgundy);border:1px solid var(--gold);border-radius:999px;
-    width:48px;height:48px;padding:0;cursor:pointer;flex:0 0 auto;
-    display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow);
+    height:44px;padding:0 18px;cursor:pointer;flex:0 0 auto;font:inherit;font-size:.95rem;font-weight:600;
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;box-shadow:var(--shadow);
   }
   button.mic:hover{background:var(--gold-pale)}
-  button.mic svg{width:20px;height:20px;fill:currentColor}
+  button.mic svg{width:19px;height:19px;fill:currentColor;flex:0 0 auto}
   button.mic.listening{background:var(--burgundy);color:#fff;border-color:var(--burgundy);animation:micpulse 1.2s ease-in-out infinite}
   @keyframes micpulse{0%,100%{box-shadow:0 0 0 0 rgba(111,29,47,.45)}50%{box-shadow:0 0 0 9px rgba(111,29,47,0)}}
   @media (prefers-color-scheme: dark){
@@ -234,7 +237,7 @@
   <div class="composer">
     <form id="askform">
       <label class="sr-only" for="q" id="q-label">Ask about township services</label>
-      <input type="text" id="q" autocomplete="off" placeholder="Ask about township services...">
+      <textarea id="q" rows="3" autocomplete="off" placeholder="Ask about township services..."></textarea>
       <button class="send" id="sendbtn" type="submit">Ask</button>
     </form>
   </div>
@@ -269,7 +272,7 @@
         { title: 'Garbage & Recycling', desc: 'Pickup schedules and rules.', q: 'Garbage and recycling' }
       ],
       chips: ['When is the next commissioners meeting?', 'Who is the mayor?', 'How do I get a handicap space in front of my home?', 'How do I get a birth certificate?', 'Senior programs and transportation', 'Garbage and recycling'],
-      voice: { mic: 'Ask by voice', listening: 'Listening...', listen: 'Listen', stop: 'Stop' },
+      voice: { mic: 'Ask by voice', listening: 'Listening...', listen: 'Listen', stop: 'Stop', encourage: 'Prefer to talk? Tap the microphone and ask out loud.' },
       report: {
         entryChip: 'Report an issue',
         cardTitle: 'Report an Issue',
@@ -344,7 +347,7 @@
         { title: 'Basura y Reciclaje', desc: 'Horarios y reglas de recogida.', q: 'Basura y reciclaje' }
       ],
       chips: ['¿Cuándo es la próxima reunión de comisionados?', '¿Quién es el alcalde?', '¿Cómo consigo un espacio para discapacitados frente a mi casa?', '¿Cómo obtengo un acta de nacimiento?', 'Programas y transporte para personas mayores', 'Basura y reciclaje'],
-      voice: { mic: 'Preguntar por voz', listening: 'Escuchando...', listen: 'Escuchar', stop: 'Detener' },
+      voice: { mic: 'Preguntar por voz', listening: 'Escuchando...', listen: 'Escuchar', stop: 'Detener', encourage: '¿Prefiere hablar? Toque el micrófono y pregunte en voz alta.' },
       report: {
         entryChip: 'Reportar un problema',
         cardTitle: 'Reportar un Problema',
@@ -474,7 +477,12 @@
     document.getElementById('btn-en').setAttribute('aria-pressed', lang==='en' ? 'true' : 'false');
     document.getElementById('btn-es').setAttribute('aria-pressed', lang==='es' ? 'true' : 'false');
     document.documentElement.lang = lang;
-    if (voice.micBtn) voice.micBtn.setAttribute('aria-label', STR[lang].voice.mic);
+    if (voice.micBtn){
+      voice.micBtn.setAttribute('aria-label', STR[lang].voice.mic);
+      var micLabel=voice.micBtn.querySelector('.mic-label');
+      if (micLabel) micLabel.textContent=STR[lang].voice.mic;
+    }
+    if (voice.enc) voice.enc.textContent=STR[lang].voice.encourage;
     if (voice.hint) voice.hint.textContent = STR[lang].voice.listening;
     renderChips();
     renderCards();
@@ -644,18 +652,26 @@
   var voice = {
     SR: window.SpeechRecognition || window.webkitSpeechRecognition || null,
     synthOK: ('speechSynthesis' in window) && ('SpeechSynthesisUtterance' in window),
-    rec: null, listening: false, micBtn: null, hint: null, speakState: null
+    rec: null, listening: false, micBtn: null, hint: null, enc: null, speakState: null
   };
   function initVoice(){
     if (!voice.SR) return;
     var form=document.getElementById('askform');
+    var bar=document.createElement('div');
+    bar.className='voicebar'; bar.id='voicebar';
     var btn=document.createElement('button');
     btn.type='button'; btn.id='micbtn'; btn.className='mic';
-    btn.innerHTML=MIC_SVG;
+    btn.innerHTML=MIC_SVG+'<span class="mic-label">'+esc(STR[lang].voice.mic)+'</span>';
     btn.setAttribute('aria-label', STR[lang].voice.mic);
     btn.setAttribute('aria-pressed', 'false');
-    form.insertBefore(btn, document.getElementById('sendbtn'));
+    bar.appendChild(btn);
+    var enc=document.createElement('span');
+    enc.className='voice-enc'; enc.id='voice-enc';
+    enc.textContent=STR[lang].voice.encourage;
+    bar.appendChild(enc);
+    form.parentNode.insertBefore(bar, form);
     voice.micBtn=btn;
+    voice.enc=enc;
     var hint=document.createElement('div');
     hint.id='voicehint'; hint.className='voicehint'; hint.setAttribute('aria-live', 'polite');
     hint.textContent=STR[lang].voice.listening;
@@ -689,9 +705,10 @@
       if (!transcript) return;
       var input=document.getElementById('q');
       input.value=transcript;
+      autoGrow();
       var form=document.getElementById('askform');
       if (form.requestSubmit) form.requestSubmit();
-      else { ask(input.value); input.value=''; }
+      else { ask(input.value); input.value=''; autoGrow(); }
     };
     rec.onend=function(){ setListening(false); };
     rec.onerror=function(){ setListening(false); };
@@ -761,9 +778,29 @@
       .catch(function(){ thinking.remove(); addBot({lead: lang==='es' ? 'Lo siento, algo salió mal. Llame a la Mesa de Ayuda del municipio al 201-875-9110.' : 'Sorry, something went wrong. Please call the Township Help Desk at 201-875-9110.', details:[], contact:[]}); })
       .finally(function(){ btn.disabled=false; });
   }
+  /* ---------- composer: multi-line textarea with auto-grow ----------
+     Starts at 3 lines, grows with the text up to about 8 lines, then
+     scrolls. Enter submits; Shift+Enter inserts a newline. After a
+     submit the box clears and shrinks back to its starting height. */
+  var qEl=document.getElementById('q');
+  function autoGrow(){
+    qEl.style.height='auto';
+    var max=212;
+    qEl.style.height=Math.min(qEl.scrollHeight, max)+'px';
+    qEl.style.overflowY=qEl.scrollHeight>max ? 'auto' : 'hidden';
+  }
+  qEl.addEventListener('input', autoGrow);
+  qEl.addEventListener('keydown', function(e){
+    if (e.key==='Enter' && !e.shiftKey){
+      e.preventDefault();
+      var form=document.getElementById('askform');
+      if (form.requestSubmit) form.requestSubmit();
+      else form.dispatchEvent(new Event('submit', { cancelable: true }));
+    }
+  });
   document.getElementById('askform').addEventListener('submit', function(e){
     e.preventDefault();
-    var input=document.getElementById('q'); ask(input.value); input.value='';
+    var input=document.getElementById('q'); ask(input.value); input.value=''; autoGrow();
   });
   document.getElementById('btn-en').onclick=function(){ lang='en'; applyLang(); };
   document.getElementById('btn-es').onclick=function(){ lang='es'; applyLang(); };
