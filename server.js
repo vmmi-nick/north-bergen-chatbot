@@ -40,7 +40,11 @@ function detectLang(question, requested) {
   const q = String(question || '');
   if (/[¿¡áéíóúñ]/i.test(q)) return 'es';
   const n = ' ' + normalize(q) + ' ';
-  const esHints = [' quien ', ' cuando ', ' donde ', ' como ', ' acta ', ' alcalde ', ' reunion ', ' basura ', ' biblioteca ', ' multa ', ' permiso ', ' impuesto ', ' discapacitado', ' estacionamiento ', ' piscina ', ' parque ', ' farola ', ' luz '];
+  const esHints = [' quien ', ' cuando ', ' donde ', ' como ', ' acta ', ' alcalde ', ' reunion ', ' basura ', ' biblioteca ', ' multa ', ' permiso ', ' impuesto ', ' discapacitado', ' estacionamiento ', ' piscina ', ' parque ', ' farola ', ' luz ',
+    // Common unaccented Spanish words (whole-word matches against the padded,
+    // accent-stripped question, so unaccented Spanish is still detected).
+    // Candidates that are also common standalone English words were excluded.
+    ' tengo ', ' quiero ', ' necesito ', ' hay ', ' calle ', ' casa ', ' carro ', ' coche ', ' agua ', ' mi ', ' mis ', ' una ', ' un ', ' el ', ' la ', ' los ', ' las ', ' de ', ' en ', ' para ', ' por ', ' con ', ' sin ', ' cuanto ', ' puedo ', ' esta ', ' este ', ' barrio ', ' vecino ', ' perro ', ' licencia ', ' cita ', ' pagar ', ' debo ', ' hace ', ' hace falta ', ' gracias ', ' hola ', ' buenas ', ' sotano ', ' alcantarillado ', ' inundacion ', ' velocidad ', ' hierba ', ' abandonado '];
   return esHints.some((h) => n.includes(h)) ? 'es' : 'en';
 }
 
