@@ -174,6 +174,8 @@
   }
   .voicehint{display:none;font-size:.85rem;color:var(--gold-deep);font-weight:600;margin-top:8px}
   .voicehint.on{display:block}
+  .voicemsg{display:none;font-size:.9rem;color:var(--burgundy);font-weight:600;margin-top:8px}
+  .voicemsg.on{display:block}
   .speakbtn{
     margin-top:10px;background:var(--panel);border:1px solid var(--gold);color:var(--text);
     border-radius:999px;padding:5px 12px;cursor:pointer;font:inherit;font-size:.82rem;
@@ -272,7 +274,7 @@
         { title: 'Garbage & Recycling', desc: 'Pickup schedules and rules.', q: 'Garbage and recycling' }
       ],
       chips: ['When is the next commissioners meeting?', 'Who is the mayor?', 'How do I get a handicap space in front of my home?', 'How do I get a birth certificate?', 'Senior programs and transportation', 'Garbage and recycling'],
-      voice: { mic: 'Ask by voice', listening: 'Listening...', listen: 'Listen', stop: 'Stop', encourage: 'Prefer to talk? Tap the microphone and ask out loud.' },
+      voice: { mic: 'Ask by voice', listening: 'Listening...', listen: 'Listen', stop: 'Stop', encourage: 'Prefer to talk? Tap the microphone and ask out loud.', nohear: "I didn't catch that. Tap the microphone and try again.", blocked: 'Microphone access is blocked. Allow the microphone in your browser settings, or type your question instead.', network: 'Voice recognition needs an internet connection.' },
       report: {
         entryChip: 'Report an issue',
         cardTitle: 'Report an Issue',
@@ -347,7 +349,7 @@
         { title: 'Basura y Reciclaje', desc: 'Horarios y reglas de recogida.', q: 'Basura y reciclaje' }
       ],
       chips: ['¿Cuándo es la próxima reunión de comisionados?', '¿Quién es el alcalde?', '¿Cómo consigo un espacio para discapacitados frente a mi casa?', '¿Cómo obtengo un acta de nacimiento?', 'Programas y transporte para personas mayores', 'Basura y reciclaje'],
-      voice: { mic: 'Preguntar por voz', listening: 'Escuchando...', listen: 'Escuchar', stop: 'Detener', encourage: '¿Prefiere hablar? Toque el micrófono y pregunte en voz alta.' },
+      voice: { mic: 'Preguntar por voz', listening: 'Escuchando...', listen: 'Escuchar', stop: 'Detener', encourage: '¿Prefiere hablar? Toque el micrófono y pregunte en voz alta.', nohear: 'No escuché eso. Toque el micrófono e inténtelo de nuevo.', blocked: 'El acceso al micrófono está bloqueado. Permita el micrófono en los ajustes de su navegador, o escriba su pregunta.', network: 'El reconocimiento de voz necesita una conexión a internet.' },
       report: {
         entryChip: 'Reportar un problema',
         cardTitle: 'Reportar un Problema',
@@ -652,8 +654,21 @@
   var voice = {
     SR: window.SpeechRecognition || window.webkitSpeechRecognition || null,
     synthOK: ('speechSynthesis' in window) && ('SpeechSynthesisUtterance' in window),
-    rec: null, listening: false, micBtn: null, hint: null, enc: null, speakState: null
+    rec: null, listening: false, micBtn: null, hint: null, enc: null, speakState: null,
+    msg: null, gotFinal: false, anyResult: false, pendingMsg: null, msgShown: false,
+    userStopped: false, timer: null
   };
+  function showVoiceMsg(text){
+    if (!voice.msg) return;
+    voice.msg.textContent=text;
+    voice.msg.classList.add('on');
+    voice.msgShown=true;
+  }
+  function hideVoiceMsg(){
+    if (!voice.msg) return;
+    voice.msg.classList.remove('on');
+    voice.msgShown=false;
+  }
   function initVoice(){
     if (!voice.SR) return;
     var form=document.getElementById('askform');
@@ -677,6 +692,12 @@
     hint.textContent=STR[lang].voice.listening;
     form.parentNode.appendChild(hint);
     voice.hint=hint;
+    var msg=document.createElement('div');
+    msg.id='voicemsg'; msg.className='voicemsg'; msg.setAttribute('aria-live', 'polite');
+    form.parentNode.appendChild(msg);
+    voice.msg=msg;
+    document.getElementById('q').addEventListener('input', hideVoiceMsg);
+    form.addEventListener('submit', hideVoiceMsg);
     btn.onclick=toggleMic;
   }
   function setListening(on){
@@ -689,30 +710,75 @@
   }
   function toggleMic(){
     if (!voice.SR) return;
-    if (voice.listening && voice.rec){ try { voice.rec.stop(); } catch (e) {} return; }
+    if (voice.listening && voice.rec){
+      voice.userStopped=true;
+      try { voice.rec.stop(); } catch (e) {}
+      return;
+    }
+    hideVoiceMsg();
     var rec;
     try { rec=new voice.SR(); } catch (e) { return; }
     voice.rec=rec;
+    voice.gotFinal=false;
+    voice.anyResult=false;
+    voice.pendingMsg=null;
+    voice.msgShown=false;
+    voice.userStopped=false;
     rec.lang = lang==='es' ? 'es-US' : 'en-US';
-    rec.interimResults=false;
+    rec.interimResults=true;
     rec.maxAlternatives=1;
     rec.onresult=function(ev){
-      var transcript='';
-      for (var i=ev.resultIndex; i<ev.results.length; i++){
-        if (ev.results[i].isFinal) transcript+=ev.results[i][0].transcript;
+      voice.anyResult=true;
+      var finalText='', interimText='';
+      for (var i=0; i<ev.results.length; i++){
+        if (ev.results[i].isFinal) finalText+=ev.results[i][0].transcript;
+        else interimText+=ev.results[i][0].transcript;
       }
-      transcript=transcript.trim();
-      if (!transcript) return;
       var input=document.getElementById('q');
-      input.value=transcript;
-      autoGrow();
-      var form=document.getElementById('askform');
-      if (form.requestSubmit) form.requestSubmit();
-      else { ask(input.value); input.value=''; autoGrow(); }
+      finalText=finalText.trim();
+      if (finalText){
+        voice.gotFinal=true;
+        input.value=finalText;
+        autoGrow();
+        var form=document.getElementById('askform');
+        if (form.requestSubmit) form.requestSubmit();
+        else { ask(input.value); input.value=''; autoGrow(); }
+      } else if (interimText){
+        /* Show what is being heard, live, without submitting. Only the
+           final transcript goes through the submit path, so interim text
+           can never leak into a report flow step. */
+        input.value=interimText;
+        autoGrow();
+      }
     };
-    rec.onend=function(){ setListening(false); };
-    rec.onerror=function(){ setListening(false); };
-    try { rec.start(); setListening(true); } catch (e) { setListening(false); }
+    rec.onerror=function(ev){
+      var kind=ev && ev.error ? ev.error : '';
+      if (kind==='not-allowed' || kind==='service-not-allowed') voice.pendingMsg=STR[lang].voice.blocked;
+      else if (kind==='network') voice.pendingMsg=STR[lang].voice.network;
+      else voice.pendingMsg=STR[lang].voice.nohear;
+      setListening(false);
+      if (!voice.gotFinal && !voice.userStopped && !voice.msgShown) showVoiceMsg(voice.pendingMsg);
+    };
+    rec.onend=function(){
+      if (voice.timer){ clearTimeout(voice.timer); voice.timer=null; }
+      setListening(false);
+      if (!voice.gotFinal && !voice.userStopped && !voice.msgShown){
+        showVoiceMsg(voice.pendingMsg || STR[lang].voice.nohear);
+      }
+      voice.pendingMsg=null;
+    };
+    try {
+      rec.start();
+      setListening(true);
+      /* Safety net: if nothing at all comes back within about 10
+         seconds, stop; onend then shows the didn't-catch message. */
+      voice.timer=setTimeout(function(){
+        voice.timer=null;
+        if (voice.listening && !voice.anyResult && voice.rec===rec){
+          try { rec.stop(); } catch (e) {}
+        }
+      }, 10000);
+    } catch (e) { setListening(false); }
   }
   function pickVoice(speakLang){
     try {
