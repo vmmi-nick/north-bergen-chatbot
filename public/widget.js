@@ -2,16 +2,27 @@
    Include on any page with a single script tag:
      <script src="https://YOUR-HOST/widget.js" defer></script>
    The panel loads embed.html from the same origin this script was
-   loaded from, so the same file works on any host. The panel opens
-   automatically shortly after page load; closing it collapses it to a
-   bubble and is remembered for the rest of the browser session. */
+   loaded from, so the same file works on any host. Shortly after page
+   load a teaser card appears in the corner saying what this is and
+   inviting a tap; clicking it opens the full chat panel. Dismissing
+   the teaser, or closing the panel, collapses it to a bubble and is
+   remembered for the rest of the browser session. */
 (function () {
   'use strict';
   if (window.__nbchatWidgetLoaded) return;
   window.__nbchatWidgetLoaded = true;
 
   var SESSION_KEY = 'nbchat-closed';
-  var AUTO_OPEN_MS = 1000;
+  var TEASER_DELAY_MS = 1000;
+
+  /* Teaser copy follows the host page's language when it declares one;
+     the chat itself is bilingual either way. */
+  var IS_ES = false;
+  try { IS_ES = /^es/i.test(document.documentElement.getAttribute('lang') || ''); } catch (e) {}
+  var TEASER_TITLE = IS_ES ? 'Pregunte a North Bergen' : 'Ask North Bergen';
+  var TEASER_TEXT = IS_ES
+    ? '¿Preguntas sobre los servicios del municipio? Toque para chatear con el asistente del municipio.'
+    : 'Questions about township services? Tap to chat with the township assistant.';
 
   /* Derive the embed URL from this script's own address. */
   var base = '';
@@ -44,10 +55,20 @@
     '.nbchat-bubble.nbchat-show{display:inline-flex;opacity:1;transform:translateY(0)}',
     '.nbchat-bubble:hover{background:#521423}',
     '.nbchat-bubble:focus-visible{outline:3px solid #c9a227;outline-offset:2px}',
-    '@media (max-width:480px){.nbchat-panel{right:8px;left:8px;bottom:8px;width:auto;height:calc(100vh - 16px);height:calc(100dvh - 16px);max-height:none}.nbchat-bubble{right:12px;bottom:12px}}'
+    '.nbchat-teaser{position:fixed;right:20px;bottom:20px;width:320px;max-width:calc(100vw - 16px);background:#6f1d2f;color:#fff;border:2px solid #c9a227;border-radius:16px;box-shadow:0 12px 32px rgba(40,8,18,.35),0 2px 8px rgba(40,8,18,.2);z-index:2147483000;padding:14px 40px 14px 14px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;opacity:0;transform:translateY(12px);pointer-events:none;visibility:hidden;transition:opacity .3s ease,transform .3s ease,visibility .3s}',
+    '.nbchat-teaser.nbchat-show{opacity:1;transform:translateY(0);pointer-events:auto;visibility:visible}',
+    '.nbchat-teaser-main{display:flex;align-items:flex-start;gap:11px;background:none;border:0;color:inherit;font:inherit;text-align:left;cursor:pointer;padding:0;width:100%}',
+    '.nbchat-teaser-main:focus-visible{outline:3px solid #c9a227;outline-offset:2px}',
+    '.nbchat-teaser-icon{flex:0 0 auto;width:42px;height:42px;border-radius:50%;background:#c9a227;color:#6f1d2f;display:flex;align-items:center;justify-content:center}',
+    '.nbchat-teaser-title{display:block;font-family:Georgia,"Times New Roman",serif;font-size:1rem;font-weight:700;line-height:1.25;margin-bottom:2px}',
+    '.nbchat-teaser-text{display:block;font-size:.86rem;line-height:1.4;color:#f7ecd2}',
+    '.nbchat-teaser-close{position:absolute;top:6px;right:6px;width:26px;height:26px;border-radius:50%;border:1px solid rgba(255,255,255,.4);background:transparent;color:#fff;font-size:.95rem;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}',
+    '.nbchat-teaser-close:hover{background:rgba(255,255,255,.15)}',
+    '.nbchat-teaser-close:focus-visible{outline:3px solid #c9a227;outline-offset:2px}',
+    '@media (max-width:480px){.nbchat-panel{right:8px;left:8px;bottom:8px;width:auto;height:calc(100vh - 16px);height:calc(100dvh - 16px);max-height:none}.nbchat-bubble{right:12px;bottom:12px}.nbchat-teaser{right:12px;bottom:12px}}'
   ].join('\n');
 
-  var panel = null, bubble = null, frame = null, isOpen = false;
+  var panel = null, bubble = null, teaser = null, frame = null, isOpen = false;
 
   function sessionClosed() {
     try { return window.sessionStorage.getItem(SESSION_KEY) === '1'; } catch (e) { return false; }
@@ -66,9 +87,25 @@
     panel.querySelector('.nbchat-framewrap').appendChild(frame);
   }
 
+  function showTeaser() {
+    if (!teaser || isOpen || sessionClosed()) return;
+    teaser.classList.add('nbchat-show');
+  }
+
+  function hideTeaser() {
+    if (teaser) teaser.classList.remove('nbchat-show');
+  }
+
+  function dismissTeaser() {
+    hideTeaser();
+    bubble.classList.add('nbchat-show');
+    markSessionClosed();
+  }
+
   function openPanel() {
     ensureFrame();
     isOpen = true;
+    hideTeaser();
     panel.classList.add('nbchat-open');
     bubble.classList.remove('nbchat-show');
     panel.setAttribute('aria-hidden', 'false');
@@ -103,9 +140,21 @@
       '<div class="nbchat-framewrap"></div>';
     document.body.appendChild(panel);
 
+    teaser = document.createElement('div');
+    teaser.className = 'nbchat-teaser';
+    teaser.id = 'nbchat-teaser';
+    teaser.innerHTML =
+      '<button type="button" class="nbchat-teaser-main" aria-label="Open the North Bergen Constituent Chatbot">' +
+        '<span class="nbchat-teaser-icon">' + CHAT_SVG + '</span>' +
+        '<span><span class="nbchat-teaser-title">' + TEASER_TITLE + '</span>' +
+        '<span class="nbchat-teaser-text">' + TEASER_TEXT + '</span></span>' +
+      '</button>' +
+      '<button type="button" class="nbchat-teaser-close" aria-label="Dismiss">&times;</button>';
+    document.body.appendChild(teaser);
+
     bubble = document.createElement('button');
     bubble.type = 'button';
-    bubble.className = 'nbchat-bubble nbchat-show';
+    bubble.className = 'nbchat-bubble';
     bubble.id = 'nbchat-bubble';
     bubble.setAttribute('aria-label', 'Open the North Bergen Constituent Chatbot');
     bubble.innerHTML = CHAT_SVG + '<span>Ask North Bergen</span>';
@@ -113,9 +162,13 @@
 
     panel.querySelector('#nbchat-close').addEventListener('click', closePanel);
     bubble.addEventListener('click', openPanel);
+    teaser.querySelector('.nbchat-teaser-main').addEventListener('click', openPanel);
+    teaser.querySelector('.nbchat-teaser-close').addEventListener('click', dismissTeaser);
 
-    if (!sessionClosed()) {
-      window.setTimeout(function () { if (!isOpen) openPanel(); }, AUTO_OPEN_MS);
+    if (sessionClosed()) {
+      bubble.classList.add('nbchat-show');
+    } else {
+      window.setTimeout(showTeaser, TEASER_DELAY_MS);
     }
   }
 
