@@ -101,8 +101,23 @@ function detectLang(question, requested) {
 const EMERGENCY = [
   'fire', 'smoke', 'burning', 'robbery', 'robbed', 'break in', 'breaking in', 'gun', 'shooting',
   'heart attack', 'chest pain', 'not breathing', 'unconscious', 'overdose', 'choking', 'bleeding',
-  'car accident with injuries', 'emergency', 'fuego', 'incendio', 'humo', 'robo', 'atraco', 'disparo',
-  'emergencia', 'no respira', 'inconsciente', 'sangrando', 'ataque al corazon'
+  'car accident with injuries', 'fuego', 'incendio', 'humo', 'robo', 'atraco', 'disparo',
+  'no respira', 'inconsciente', 'sangrando', 'ataque al corazon',
+  // Gas: a smell or leak is a 911 situation (added Nov 24, 2026 gap fix).
+  'smell gas', 'gas smell', 'gas leak', 'smell of gas', 'huele a gas', 'olor a gas', 'fuga de gas',
+  // Violence in progress (added Nov 24, 2026 gap fix).
+  'fight', 'fighting', 'pelea', 'assault', 'asalto', 'hit and run',
+  // The bare words "emergency" / "emergencia" are NOT triggers: they appear in
+  // benefits questions ("emergency rent assistance"). Only full declarations
+  // of an emergency count (added Nov 24, 2026 gap fix).
+  'i have an emergency', 'this is an emergency', 'there is an emergency', 'emergency help',
+  'tengo una emergencia', 'hay una emergencia', 'es una emergencia', 'esto es una emergencia'
+];
+
+// Benefits and assistance questions are never 911 emergencies, even when they
+// contain the word "emergency" (e.g. "emergency rent assistance").
+const ASSISTANCE_GUARD = [
+  'rent assistance', 'rental assistance', 'emergency assistance', 'asistencia'
 ];
 
 function isEmergency(qn) {
@@ -110,14 +125,18 @@ function isEmergency(qn) {
   // Plain substring matching false-triggered on ordinary words, e.g. the
   // emergency entry "gun" matched inside the Spanish word "pregunta",
   // sending any Spanish question containing "pregunta" to the 911 answer.
+  if (ASSISTANCE_GUARD.some((w) => qn.includes(' ' + normalize(w) + ' '))) return false;
   return EMERGENCY.some((w) => qn.includes(' ' + normalize(w) + ' '));
 }
 
 // Services North Bergen does not provide; never let a generic keyword match
 // (for example "license") route these to a township office.
+// Driver's licenses are no longer listed here: a dedicated drivers-license
+// refer-out topic (data/index.json) answers them with the NJ MVC route
+// (Nov 24, 2026 gap fix). Registration renewals and passports still fall back.
 const NOT_TOWNSHIP = [
-  "driver's license", 'drivers license', 'driver license', 'renew my license plate registration',
-  'licencia de conducir', 'car registration renewal', 'vehicle registration renewal', 'passport'
+  'renew my license plate registration',
+  'car registration renewal', 'vehicle registration renewal', 'passport'
 ];
 
 const MEETING_HINTS = [
