@@ -336,6 +336,15 @@
   var chipsEl = document.getElementById('chips');
 
   function esc(s){ var d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+  /* Wrap bare http/https URLs in ALREADY-ESCAPED text in new-tab anchors.
+     Runs after esc(), and the match excludes quotes and angle brackets, so a
+     URL can never break out of the href attribute. Plain-text fields only:
+     never apply to HTML that already contains anchors. */
+  function linkify(h){
+    return h.replace(/https?:\/\/[^\s<"]+/g, function(u){
+      return '<a href="'+u+'" target="_blank" rel="noopener">'+u+'</a>';
+    });
+  }
   function scrollChat(){ chatwrap.scrollTop = chatwrap.scrollHeight; }
   function addUser(text){
     var div=document.createElement('div'); div.className='msg user'; div.textContent=text;
@@ -343,14 +352,14 @@
   }
   function addBot(data){
     var div=document.createElement('div'); div.className='msg bot';
-    var html='<div class="lead">'+esc(data.lead||'')+'</div>';
+    var html='<div class="lead">'+linkify(esc(data.lead||''))+'</div>';
     if (data.details && data.details.length){
-      html+='<ul>'+data.details.map(function(d){return '<li>'+esc(d)+'</li>';}).join('')+'</ul>';
+      html+='<ul>'+data.details.map(function(d){return '<li>'+linkify(esc(d))+'</li>';}).join('')+'</ul>';
     }
     if (data.contact && data.contact.length){
       html+='<div class="contact"><div class="ctitle">'+esc(STR[lang].contact)+'</div>'+
         data.contact.map(function(c){
-          var v = c.href ? '<a href="'+esc(c.href)+'"'+(c.href.indexOf('http')===0?' target="_blank" rel="noopener"':'')+'>'+esc(c.value)+'</a>' : esc(c.value);
+          var v = c.href ? '<a href="'+esc(c.href)+'"'+(c.href.indexOf('http')===0?' target="_blank" rel="noopener"':'')+'>'+esc(c.value)+'</a>' : linkify(esc(c.value));
           return '<div>'+esc(c.label)+': '+v+'</div>';
         }).join('')+'</div>';
     }
