@@ -106,7 +106,11 @@ const EMERGENCY = [
 ];
 
 function isEmergency(qn) {
-  return EMERGENCY.some((w) => qn.includes(normalize(w)));
+  // Whole-word / whole-phrase matching, same as matchTopic: qn is space-padded.
+  // Plain substring matching false-triggered on ordinary words, e.g. the
+  // emergency entry "gun" matched inside the Spanish word "pregunta",
+  // sending any Spanish question containing "pregunta" to the 911 answer.
+  return EMERGENCY.some((w) => qn.includes(' ' + normalize(w) + ' '));
 }
 
 // Services North Bergen does not provide; never let a generic keyword match
@@ -208,8 +212,8 @@ function meetingAnswer(lang) {
     details.push(lang === 'es' ? `Las reuniones siguientes son: ${list}.` : `The meetings after that are: ${list}.`);
   }
   details.push(lang === 'es'
-    ? 'Todas las reuniones de este calendario se verificaron en la página oficial de Reuniones el 20 de noviembre de 2026.'
-    : 'Every meeting on this schedule was verified on the official Meetings page on November 20, 2026.');
+    ? 'Todas las reuniones de este calendario se verificaron en la página oficial de Reuniones el 23 de noviembre de 2026.'
+    : 'Every meeting on this schedule was verified on the official Meetings page on November 23, 2026.');
   return {
     kind: 'answer',
     lead: lang === 'es'
