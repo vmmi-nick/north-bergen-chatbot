@@ -1,6 +1,6 @@
 {
  "helpDeskPhone": "201-875-9110",
- "lastChecked": "2026-11-23",
+ "lastChecked": "2026-11-24",
  "topics": [
   {
    "en": {
@@ -539,14 +539,26 @@
      "street lamp",
      "light out",
      "lamp out",
-     "dark street"
+     "dark street",
+     "traffic light",
+     "traffic lights",
+     "traffic signal",
+     "broken traffic light",
+     "traffic light out",
+     "traffic light not working"
     ],
     "es": [
      "luz de la calle",
      "farola",
      "poste de luz",
      "farola apagada",
-     "alumbrado público"
+     "alumbrado público",
+     "semaforo",
+     "semáforo",
+     "semaforo roto",
+     "semáforo roto",
+     "luz de trafico",
+     "luz de tráfico"
     ]
    },
    "source": "https://www.northbergen.org/Directory",
@@ -752,7 +764,16 @@
      "pay my parking ticket",
      "pay ticket",
      "ticket payment",
-     "njmcdirect"
+     "njmcdirect",
+     "parking tickets",
+     "traffic tickets",
+     "pay parking tickets",
+     "pay traffic tickets",
+     "pay ticket online",
+     "pay tickets",
+     "pay my tickets",
+     "tickets online",
+     "pay my parking tickets online"
     ],
     "es": [
      "multa de estacionamiento",
@@ -761,7 +782,15 @@
      "pagar una multa",
      "pagar mi multa",
      "multa",
-     "multas"
+     "multas",
+     "multas de estacionamiento",
+     "multas de transito",
+     "multas de tránsito",
+     "pagar multas",
+     "pagar mis multas",
+     "pagar multa",
+     "multas en linea",
+     "multas en línea"
     ]
    },
    "source": "https://www.njcourts.gov",
@@ -841,10 +870,16 @@
       "href": "tel:+12013922128",
       "label": "Sewerage & Storm Systems (Township)",
       "value": "201-392-2128"
+     },
+     {
+      "href": "https://mywater.veolia.us",
+      "label": "Veolia Water New Jersey",
+      "value": "mywater.veolia.us"
      }
     ],
     "details": [
      "To pay your sewer bill, follow the payment instructions printed on the MUA bill, or call the MUA at 201-422-0100 and ask about payment options and your balance. The MUA office is at 6200 Tonnelle Avenue.",
+     "Your drinking water bill is separate. Water service in North Bergen is provided by Veolia Water New Jersey, and water bills and help paying them, including financial assistance programs, are handled by Veolia at mywater.veolia.us. Neither the township nor the MUA bills for drinking water.",
      "For a sewer backup, or a sewer or storm drain problem on your street, call the township's Sewerage and Storm Systems line at 201-392-2128.",
      "This chat does not collect account information, so have your MUA account number ready when you call."
     ],
@@ -861,10 +896,16 @@
       "href": "tel:+12013922128",
       "label": "Alcantarillado y Sistemas Pluviales (Municipio)",
       "value": "201-392-2128"
+     },
+     {
+      "href": "https://mywater.veolia.us",
+      "label": "Veolia Water New Jersey",
+      "value": "mywater.veolia.us"
      }
     ],
     "details": [
      "Para pagar su factura de alcantarillado, siga las instrucciones de pago impresas en la factura de la MUA, o llame a la MUA al 201-422-0100 y pregunte por las opciones de pago y su saldo. La oficina de la MUA está en 6200 Tonnelle Avenue.",
+     "Su factura de agua potable es aparte. El servicio de agua en North Bergen lo brinda Veolia Water New Jersey, y las facturas de agua y la ayuda para pagarlas, incluidos los programas de asistencia financiera, los maneja Veolia en mywater.veolia.us. Ni el municipio ni la MUA cobran por el agua potable.",
      "Para un atasco de alcantarillado, o un problema con el alcantarillado o un drenaje pluvial en su calle, llame a la línea de Alcantarillado y Sistemas Pluviales del municipio al 201-392-2128.",
      "Este chat no recopila información de cuentas, así que tenga a mano su número de cuenta de la MUA cuando llame."
     ],
@@ -877,17 +918,30 @@
      "sewer bill",
      "sewerage",
      "pay my sewer",
-     "sewer payment"
+     "sewer payment",
+     "water bill",
+     "water bills",
+     "pay my water bill",
+     "pay water bill",
+     "help paying my water bill",
+     "help paying my bill",
+     "utility bill",
+     "water payment"
     ],
     "es": [
      "alcantarillado",
      "factura de alcantarillado",
      "pagar el alcantarillado",
-     "cloacas"
+     "cloacas",
+     "factura de agua",
+     "factura del agua",
+     "pagar mi factura de agua",
+     "recibo de agua",
+     "ayuda para pagar mi factura de agua"
     ]
    },
    "source": "https://www.northbergen.org/",
-   "sourceLabel": "Township of North Bergen official site"
+   "sourceLabel": "Township of North Bergen official site and Veolia Water New Jersey"
   },
   {
    "en": {
@@ -1358,19 +1412,40 @@
     "en": [
      "building permit",
      "construction permit",
-     "permit",
-     "permits",
      "get a permit",
      "renovation permit",
      "zoning permit",
-     "code enforcement"
+     "code enforcement",
+     "need a permit",
+     "permit for a fence",
+     "fence permit",
+     "build a shed",
+     "building a shed",
+     "shed",
+     "do construction",
+     "construction work",
+     "construction",
+     "renovation",
+     "remodeling",
+     "home renovation",
+     "permit to build",
+     "deck permit"
     ],
     "es": [
      "permiso de construccion",
      "permiso de construcción",
-     "permiso",
-     "permisos",
-     "permiso de obra"
+     "permiso de obra",
+     "hacer construccion",
+     "hacer construcción",
+     "construccion",
+     "construcción",
+     "construir",
+     "cobertizo",
+     "construir un cobertizo",
+     "permiso para una cerca",
+     "renovacion",
+     "renovación",
+     "obra en mi casa"
     ]
    },
    "source": "https://www.northbergen.org/",
@@ -1665,14 +1740,19 @@
      "residential parking permit",
      "residential parking",
      "parking decal",
-     "parking pass"
+     "parking pass",
+     "parking permits",
+     "resident parking permits"
     ],
     "es": [
      "permiso de estacionamiento para residentes",
      "permiso de estacionamiento",
      "permiso de parqueo",
      "estacionamiento para residentes",
-     "permiso de residente"
+     "permiso de residente",
+     "permisos de estacionamiento",
+     "permisos de parqueo",
+     "permiso para estacionar"
     ]
    },
    "source": "https://www.northbergen.org/",
@@ -2036,7 +2116,14 @@
      "any update",
      "no one called me back",
      "called me back",
-     "check on a request"
+     "check on a request",
+     "notice in the mail",
+     "got a notice",
+     "letter in the mail",
+     "received a notice",
+     "got a letter",
+     "letter from the township",
+     "notice in my mailbox"
     ],
     "es": [
      "seguimiento",
@@ -2046,7 +2133,14 @@
      "mi solicitud",
      "mi caso",
      "nadie me llamo",
-     "no me llamaron"
+     "no me llamaron",
+     "aviso en el correo",
+     "recibi un aviso",
+     "recibí un aviso",
+     "carta en el correo",
+     "me llego un aviso",
+     "me llegó un aviso",
+     "aviso por correo"
     ]
    },
    "source": "https://www.northbergen.org/",
@@ -2487,6 +2581,617 @@
      "quiero reportar",
      "reportar un problema",
      "hacer una queja"
+    ]
+   },
+   "source": "https://www.northbergen.org/",
+   "sourceLabel": "Township of North Bergen official site"
+  },
+  {
+   "en": {
+    "lead": "Driver's licenses are handled by the New Jersey Motor Vehicle Commission (MVC), not by the township.",
+    "details": [
+     "Most drivers can renew a license online through the MVC at nj.gov/mvc, and the renewed license is mailed to you. If you are not eligible to renew online, the MVC site lets you schedule an appointment at a Licensing Center.",
+     "Town Hall and the Township Clerk's office cannot renew or replace a driver's license."
+    ],
+    "contact": [
+     {
+      "href": "https://www.nj.gov/mvc",
+      "label": "NJ Motor Vehicle Commission",
+      "value": "nj.gov/mvc"
+     },
+     {
+      "href": "tel:+12018759110",
+      "label": "Township Help Desk",
+      "value": "201-875-9110"
+     }
+    ]
+   },
+   "es": {
+    "lead": "Las licencias de conducir las maneja la Comisión de Vehículos Motorizados de New Jersey (MVC), no el municipio.",
+    "details": [
+     "La mayoría de los conductores puede renovar su licencia en línea a través de la MVC en nj.gov/mvc, y la licencia renovada se le envía por correo. Si no es elegible para renovar en línea, el sitio de la MVC le permite programar una cita en un Centro de Licencias.",
+     "El Ayuntamiento y la oficina de la Secretaría Municipal no pueden renovar ni reemplazar una licencia de conducir."
+    ],
+    "contact": [
+     {
+      "href": "https://www.nj.gov/mvc",
+      "label": "Comisión de Vehículos Motorizados de NJ",
+      "value": "nj.gov/mvc"
+     },
+     {
+      "href": "tel:+12018759110",
+      "label": "Mesa de Ayuda del municipio",
+      "value": "201-875-9110"
+     }
+    ]
+   },
+   "id": "drivers-license",
+   "keywords": {
+    "en": [
+     "driver's license",
+     "drivers license",
+     "driver license",
+     "renew my license",
+     "renew my driver's license",
+     "renew drivers license",
+     "license renewal",
+     "dmv",
+     "motor vehicle commission",
+     "real id",
+     "renew my id"
+    ],
+    "es": [
+     "licencia de conducir",
+     "renovar mi licencia de conducir",
+     "renovar la licencia de conducir",
+     "licencia de manejo",
+     "comision de vehiculos",
+     "comisión de vehículos motorizados",
+     "mvc"
+    ]
+   },
+   "source": "https://www.nj.gov/mvc/license/licrenew.htm",
+   "sourceLabel": "NJ Motor Vehicle Commission (nj.gov/mvc)"
+  },
+  {
+   "en": {
+    "lead": "Power outages are handled by PSE&G, the electric utility serving North Bergen, not by the township.",
+    "details": [
+     "Report an outage to PSE&G by calling 1-800-436-PSEG (7734), online at pseg.com/outagecenter, or by texting OUT to 4PSEG (47734).",
+     "Stay away from any downed power line, and call 911 if there is an immediate hazard."
+    ],
+    "contact": [
+     {
+      "href": "tel:+18004367734",
+      "label": "PSE&G outage line",
+      "value": "1-800-436-7734"
+     },
+     {
+      "href": "https://pseg.com/outagecenter",
+      "label": "PSE&G Outage Center",
+      "value": "pseg.com/outagecenter"
+     }
+    ]
+   },
+   "es": {
+    "lead": "Los apagones los maneja PSE&G, la compañía eléctrica que sirve a North Bergen, no el municipio.",
+    "details": [
+     "Reporte un apagón a PSE&G llamando al 1-800-436-PSEG (7734), en línea en pseg.com/outagecenter, o enviando el texto OUT al 4PSEG (47734).",
+     "Manténgase alejado de cualquier cable eléctrico caído y llame al 911 si hay un peligro inmediato."
+    ],
+    "contact": [
+     {
+      "href": "tel:+18004367734",
+      "label": "Línea de apagones de PSE&G",
+      "value": "1-800-436-7734"
+     },
+     {
+      "href": "https://pseg.com/outagecenter",
+      "label": "Centro de Apagones de PSE&G",
+      "value": "pseg.com/outagecenter"
+     }
+    ]
+   },
+   "id": "power-outage",
+   "keywords": {
+    "en": [
+     "power outage",
+     "power outages",
+     "power out",
+     "power is out",
+     "no power",
+     "electricity out",
+     "electric outage",
+     "report an outage",
+     "report outage",
+     "report a power outage",
+     "power went out",
+     "blackout"
+    ],
+    "es": [
+     "apagon",
+     "apagón",
+     "sin luz",
+     "corte de luz",
+     "se fue la luz",
+     "no hay luz",
+     "falla electrica",
+     "falla eléctrica",
+     "reportar un apagon",
+     "reportar un apagón"
+    ]
+   },
+   "source": "https://nj.myaccount.pseg.com/MyServicePublic/OutagePublic",
+   "sourceLabel": "PSE&G (pseg.com)"
+  },
+  {
+   "en": {
+    "lead": "SNAP food benefits are a state and county program, not a township program.",
+    "details": [
+     "NJ SNAP (formerly food stamps) is run by the State of New Jersey through the county social service agencies. You can apply or renew online at njsnap.gov.",
+     "Hudson County residents can also contact the Hudson County Department of Family Services, Division of Welfare, in Jersey City. Benefits are issued on a Families First electronic benefits card."
+    ],
+    "contact": [
+     {
+      "href": "https://www.njsnap.gov",
+      "label": "NJ SNAP",
+      "value": "njsnap.gov"
+     },
+     {
+      "href": "tel:+12014203000",
+      "label": "Hudson County Division of Welfare",
+      "value": "201-420-3000"
+     }
+    ]
+   },
+   "es": {
+    "lead": "Los beneficios de alimentos SNAP son un programa estatal y del condado, no del municipio.",
+    "details": [
+     "NJ SNAP (antes cupones de alimentos) lo administra el Estado de New Jersey a través de las agencias de servicios sociales de los condados. Puede solicitar o renovar en línea en njsnap.gov.",
+     "Los residentes del condado de Hudson también pueden comunicarse con el Departamento de Servicios Familiares del Condado de Hudson, División de Bienestar, en Jersey City. Los beneficios se emiten en una tarjeta electrónica de beneficios Families First."
+    ],
+    "contact": [
+     {
+      "href": "https://www.njsnap.gov",
+      "label": "NJ SNAP",
+      "value": "njsnap.gov"
+     },
+     {
+      "href": "tel:+12014203000",
+      "label": "División de Bienestar del Condado de Hudson",
+      "value": "201-420-3000"
+     }
+    ]
+   },
+   "id": "snap-benefits",
+   "keywords": {
+    "en": [
+     "snap",
+     "food stamps",
+     "food stamp",
+     "ebt",
+     "ebt card",
+     "families first",
+     "food assistance",
+     "renew snap",
+     "apply for snap",
+     "snap benefits"
+    ],
+    "es": [
+     "snap",
+     "cupones de alimentos",
+     "estampillas de comida",
+     "tarjeta ebt",
+     "asistencia alimentaria",
+     "beneficios snap",
+     "renovar snap",
+     "solicitar snap"
+    ]
+   },
+   "source": "https://www.nj.gov/disabilities/essential-needs/food-assistance/",
+   "sourceLabel": "NJ Department of Human Services (nj.gov)"
+  },
+  {
+   "en": {
+    "lead": "The Hudson-Bergen Light Rail is run by NJ TRANSIT, not by the township.",
+    "details": [
+     "You can buy light rail tickets and passes in the NJ TRANSIT mobile app or from the ticket vending machines at light rail stations.",
+     "If you buy a paper ticket, time-stamp it in a platform validator before you board. One-way tickets on the Hudson-Bergen Light Rail are valid for 60 minutes."
+    ],
+    "contact": [
+     {
+      "href": "https://www.njtransit.com",
+      "label": "NJ TRANSIT",
+      "value": "njtransit.com"
+     },
+     {
+      "href": "tel:+19732755555",
+      "label": "NJ TRANSIT customer service",
+      "value": "973-275-5555"
+     }
+    ]
+   },
+   "es": {
+    "lead": "El tren ligero Hudson-Bergen lo opera NJ TRANSIT, no el municipio.",
+    "details": [
+     "Puede comprar boletos y pases del tren ligero en la aplicación móvil de NJ TRANSIT o en las máquinas expendedoras de las estaciones del tren ligero.",
+     "Si compra un boleto de papel, márquelo en un validador de la plataforma antes de abordar. Los boletos de ida en el tren ligero Hudson-Bergen son válidos por 60 minutos."
+    ],
+    "contact": [
+     {
+      "href": "https://www.njtransit.com",
+      "label": "NJ TRANSIT",
+      "value": "njtransit.com"
+     },
+     {
+      "href": "tel:+19732755555",
+      "label": "Servicio al cliente de NJ TRANSIT",
+      "value": "973-275-5555"
+     }
+    ]
+   },
+   "id": "light-rail",
+   "keywords": {
+    "en": [
+     "light rail",
+     "hudson bergen light rail",
+     "hblr",
+     "nj transit",
+     "light rail ticket",
+     "buy a light rail ticket",
+     "train tickets"
+    ],
+    "es": [
+     "tren ligero",
+     "light rail",
+     "boleto del tren ligero",
+     "boleto de tren",
+     "nj transit",
+     "boletos del tren ligero"
+    ]
+   },
+   "source": "https://www.njtransit.com/first-run/tickets-please-we-have-ticket-or-pass-and-savings-just-you",
+   "sourceLabel": "NJ TRANSIT (njtransit.com)"
+  },
+  {
+   "en": {
+    "lead": "Dead animals on streets and other public property are handled through the township's animal control, which is coordinated by the Health Department.",
+    "details": [
+     "Call the Health Department at 201-392-2084 during working hours to report a dead animal on public property. The township contracts with a licensed animal control agency that is available 24 hours a day, 7 days a week.",
+     "After hours, call the Police Department non-emergency line at 201-392-2100.",
+     "For a wildlife problem on private property, the Health Department can refer you to the township's animal control officer; there is a fee for services performed on private property."
+    ],
+    "contact": [
+     {
+      "href": "tel:+12013922084",
+      "label": "Health Department",
+      "value": "201-392-2084"
+     },
+     {
+      "href": "tel:+12013922100",
+      "label": "Police Department (non-emergency)",
+      "value": "201-392-2100"
+     }
+    ]
+   },
+   "es": {
+    "lead": "Los animales muertos en las calles y otros espacios públicos se manejan a través del control de animales del municipio, que coordina el Departamento de Salud.",
+    "details": [
+     "Llame al Departamento de Salud al 201-392-2084 en horario laboral para reportar un animal muerto en un espacio público. El municipio tiene contrato con una agencia de control de animales con licencia que está disponible las 24 horas del día, los 7 días de la semana.",
+     "Fuera del horario laboral, llame a la línea de no emergencias del Departamento de Policía al 201-392-2100.",
+     "Para un problema con fauna silvestre en una propiedad privada, el Departamento de Salud puede referirlo al oficial de control de animales del municipio; hay un cargo por los servicios realizados en propiedad privada."
+    ],
+    "contact": [
+     {
+      "href": "tel:+12013922084",
+      "label": "Departamento de Salud",
+      "value": "201-392-2084"
+     },
+     {
+      "href": "tel:+12013922100",
+      "label": "Departamento de Policía (no emergencias)",
+      "value": "201-392-2100"
+     }
+    ]
+   },
+   "id": "dead-animal",
+   "keywords": {
+    "en": [
+     "dead animal",
+     "dead animal on the street",
+     "dead deer",
+     "dead raccoon",
+     "dead dog",
+     "dead cat",
+     "animal carcass",
+     "animal control",
+     "stray animal",
+     "stray dog",
+     "stray cat",
+     "remove a dead animal"
+    ],
+    "es": [
+     "animal muerto",
+     "animal muerto en la calle",
+     "control de animales",
+     "perro callejero",
+     "gato callejero",
+     "animal en la calle",
+     "recoger un animal muerto"
+    ]
+   },
+   "source": "https://www.northbergen.org/Departments/Health/",
+   "sourceLabel": "Township Health Department page"
+  },
+  {
+   "en": {
+    "lead": "Heat complaints in rental housing are handled by the township Health Department.",
+    "details": [
+     "Under the township ordinance, property owners are responsible for turning on their boilers and providing heat to their tenants as of October 1, and the temperature inside a tenant's home should read 70 degrees Fahrenheit during the day and night.",
+     "If your apartment has no heat, contact the Health Department at 201-392-2084 during working hours. Health Department staff conduct inspections for residential public health nuisance complaints, and heat is one of the most common complaints they handle."
+    ],
+    "contact": [
+     {
+      "href": "tel:+12013922084",
+      "label": "Health Department",
+      "value": "201-392-2084"
+     },
+     {
+      "href": "tel:+12013922000",
+      "label": "Town Hall main number",
+      "value": "201-392-2000"
+     }
+    ]
+   },
+   "es": {
+    "lead": "Las quejas por falta de calefacción en viviendas de alquiler las maneja el Departamento de Salud del municipio.",
+    "details": [
+     "Según la ordenanza del municipio, los propietarios son responsables de encender sus calderas y brindar calefacción a sus inquilinos a partir del 1 de octubre, y la temperatura dentro del hogar de un inquilino debe ser de 70 grados Fahrenheit durante el día y la noche.",
+     "Si su apartamento no tiene calefacción, comuníquese con el Departamento de Salud al 201-392-2084 en horario laboral. El personal del Departamento de Salud realiza inspecciones por quejas de molestias de salud pública residencial, y la calefacción es una de las quejas más comunes que atienden."
+    ],
+    "contact": [
+     {
+      "href": "tel:+12013922084",
+      "label": "Departamento de Salud",
+      "value": "201-392-2084"
+     },
+     {
+      "href": "tel:+12013922000",
+      "label": "Número principal del Ayuntamiento",
+      "value": "201-392-2000"
+     }
+    ]
+   },
+   "id": "no-heat",
+   "keywords": {
+    "en": [
+     "no heat",
+     "no hot water",
+     "heat complaint",
+     "apartment has no heat",
+     "without heat",
+     "heating complaint",
+     "landlord heat",
+     "no heating",
+     "heat is out"
+    ],
+    "es": [
+     "sin calefaccion",
+     "sin calefacción",
+     "no hay calefaccion",
+     "no hay calefacción",
+     "calefaccion",
+     "calefacción",
+     "queja de calefaccion",
+     "queja de calefacción",
+     "sin agua caliente",
+     "no tengo calefaccion",
+     "no tengo calefacción"
+    ]
+   },
+   "source": "https://www.northbergen.org/Departments/Health/",
+   "sourceLabel": "Township Health Department page"
+  },
+  {
+   "en": {
+    "lead": "The Recycling Center is at the North Bergen MUA, 6200 Tonnelle Avenue.",
+    "details": [
+     "Some materials are not collected at the curb and must be brought to the Recycling Center, including motor oil, antifreeze and tires without rims.",
+     "The MUA does not post the Recycling Center's hours on its website, so call the MUA at 201-422-0100 to confirm the hours, including Sunday hours, before you go."
+    ],
+    "contact": [
+     {
+      "href": "tel:+12014220100",
+      "label": "North Bergen MUA",
+      "value": "201-422-0100"
+     },
+     {
+      "href": "https://nbmua.com/recycling-information/",
+      "label": "North Bergen MUA recycling information",
+      "value": "nbmua.com/recycling-information"
+     }
+    ]
+   },
+   "es": {
+    "lead": "El Centro de Reciclaje está en la MUA de North Bergen, 6200 Tonnelle Avenue.",
+    "details": [
+     "Algunos materiales no se recogen en la acera y deben llevarse al Centro de Reciclaje, incluidos el aceite de motor, el anticongelante y las llantas sin aros.",
+     "La MUA no publica el horario del Centro de Reciclaje en su sitio web, así que llame a la MUA al 201-422-0100 para confirmar el horario, incluido el horario de los domingos, antes de ir."
+    ],
+    "contact": [
+     {
+      "href": "tel:+12014220100",
+      "label": "MUA de North Bergen",
+      "value": "201-422-0100"
+     },
+     {
+      "href": "https://nbmua.com/recycling-information/",
+      "label": "Información de reciclaje de la MUA de North Bergen",
+      "value": "nbmua.com/recycling-information"
+     }
+    ]
+   },
+   "id": "recycling-center",
+   "keywords": {
+    "en": [
+     "recycling center",
+     "recycling centre",
+     "recycling center hours",
+     "recycling drop off",
+     "drop off recycling",
+     "when does the recycling center close",
+     "recycling center close"
+    ],
+    "es": [
+     "centro de reciclaje",
+     "horario del centro de reciclaje",
+     "llevar reciclaje",
+     "centro de reciclaje horas"
+    ]
+   },
+   "source": "https://nbmua.com/recycling-information/",
+   "sourceLabel": "North Bergen MUA (nbmua.com)"
+  },
+  {
+   "en": {
+    "lead": "Town Hall is open Monday to Friday, 9:00 AM to 4:00 PM.",
+    "details": [
+     "Town Hall is at 4233 Kennedy Boulevard. Those are the regular hours; hours can change around holidays, so for a specific date, call Town Hall at 201-392-2000 to confirm before you go."
+    ],
+    "contact": [
+     {
+      "href": "tel:+12013922000",
+      "label": "Town Hall main number",
+      "value": "201-392-2000"
+     },
+     {
+      "label": "Town Hall",
+      "value": "4233 Kennedy Boulevard, North Bergen, NJ 07047"
+     }
+    ]
+   },
+   "es": {
+    "lead": "El Ayuntamiento está abierto de lunes a viernes, de 9:00 AM a 4:00 PM.",
+    "details": [
+     "El Ayuntamiento está en 4233 Kennedy Boulevard. Ese es el horario regular; el horario puede cambiar alrededor de los días festivos, así que para una fecha específica, llame al Ayuntamiento al 201-392-2000 para confirmar antes de ir."
+    ],
+    "contact": [
+     {
+      "href": "tel:+12013922000",
+      "label": "Número principal del Ayuntamiento",
+      "value": "201-392-2000"
+     },
+     {
+      "label": "Ayuntamiento",
+      "value": "4233 Kennedy Boulevard, North Bergen, NJ 07047"
+     }
+    ]
+   },
+   "id": "town-hall-hours",
+   "keywords": {
+    "en": [
+     "town hall open",
+     "is town hall open",
+     "town hall hours",
+     "when does town hall close",
+     "when does town hall open",
+     "what time does town hall open",
+     "what time does town hall close",
+     "town hall close",
+     "hours of town hall"
+    ],
+    "es": [
+     "ayuntamiento abierto",
+     "esta abierto el ayuntamiento",
+     "está abierto el ayuntamiento",
+     "a que hora abre el ayuntamiento",
+     "a qué hora abre el ayuntamiento",
+     "a que hora cierra el ayuntamiento",
+     "a qué hora cierra el ayuntamiento",
+     "cuando abre el ayuntamiento",
+     "cuándo abre el ayuntamiento",
+     "horario del ayuntamiento"
+    ]
+   },
+   "source": "https://www.northbergen.org/",
+   "sourceLabel": "Township of North Bergen official site"
+  },
+  {
+   "en": {
+    "lead": "Welcome to North Bergen. A few township basics will get you started.",
+    "details": [
+     "Town Hall is at 4233 Kennedy Boulevard and is open Monday to Friday, 9:00 AM to 4:00 PM; the main number is 201-392-2000.",
+     "Garbage and recycling pickup days depend on your address and are run by the North Bergen MUA. Look up your days on the MUA recycling page, linked below under Contact, or call the MUA at 201-422-0100.",
+     "If you park on the street overnight in a residential permit zone, every vehicle needs a parking permit, and resident permits are issued by the North Bergen Parking Authority.",
+     "If you have a dog, it must be licensed every year through the Health Department. The public library and the Parks and Recreation department run programs for all ages."
+    ],
+    "contact": [
+     {
+      "href": "tel:+12013922000",
+      "label": "Town Hall main number",
+      "value": "201-392-2000"
+     },
+     {
+      "href": "tel:+12018759110",
+      "label": "Township Help Desk",
+      "value": "201-875-9110"
+     },
+     {
+      "href": "https://nbmua.com/recycling-information/",
+      "label": "North Bergen MUA – find your pickup day",
+      "value": "nbmua.com/recycling-information"
+     }
+    ]
+   },
+   "es": {
+    "lead": "Bienvenido a North Bergen. Algunos datos básicos del municipio le ayudarán a empezar.",
+    "details": [
+     "El Ayuntamiento está en 4233 Kennedy Boulevard y abre de lunes a viernes, de 9:00 AM a 4:00 PM; el número principal es 201-392-2000.",
+     "Los días de recogida de basura y reciclaje dependen de su dirección y los realiza la MUA de North Bergen. Consulte sus días en la página de reciclaje de la MUA, enlazada abajo en Contacto, o llame a la MUA al 201-422-0100.",
+     "Si estaciona en la calle durante la noche en una zona residencial con permiso, cada vehículo necesita un permiso de estacionamiento, y los permisos para residentes los emite la Autoridad de Estacionamiento de North Bergen.",
+     "Si tiene un perro, debe tener licencia todos los años a través del Departamento de Salud. La biblioteca pública y el departamento de Parques y Recreación ofrecen programas para todas las edades."
+    ],
+    "contact": [
+     {
+      "href": "tel:+12013922000",
+      "label": "Número principal del Ayuntamiento",
+      "value": "201-392-2000"
+     },
+     {
+      "href": "tel:+12018759110",
+      "label": "Mesa de Ayuda del municipio",
+      "value": "201-875-9110"
+     },
+     {
+      "href": "https://nbmua.com/recycling-information/",
+      "label": "MUA de North Bergen – encuentre su día de recogida",
+      "value": "nbmua.com/recycling-information"
+     }
+    ]
+   },
+   "id": "new-resident",
+   "keywords": {
+    "en": [
+     "just moved",
+     "moved here",
+     "new resident",
+     "new to north bergen",
+     "just moved to north bergen",
+     "moved to north bergen",
+     "new in town",
+     "recently moved",
+     "i just moved"
+    ],
+    "es": [
+     "recien mudado",
+     "recién mudado",
+     "me mude",
+     "me mudé",
+     "nuevo residente",
+     "nuevo en north bergen",
+     "acabo de mudarme",
+     "recien llegado",
+     "recién llegado"
     ]
    },
    "source": "https://www.northbergen.org/",
