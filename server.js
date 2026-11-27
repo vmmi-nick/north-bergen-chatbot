@@ -359,6 +359,76 @@ async function askModel(question, lang) {
   }
 }
 
+// ---------- follow-up rewrite (rewrite-then-match) ----------
+// Follow-up questions ("How much does it cost?") match nothing on their own.
+// When the client sends the recent chat history, the model is used ONLY to
+// rewrite the follow-up into a standalone question; the rewritten question
+// then goes through the exact same verified pipeline as any first question
+// (emergency, not-a-township, meetings, index match), so the resident still
+// receives the pre-written verified answer word for word. The model never
+// composes an answer in this path. History is supplied by the client per
+// request, kept in memory there only, and sanitized hard here.
+
+function sanitizeHistory(raw) {
+  if (!Array.isArray(raw)) return [];
+  const out = [];
+  for (const e of raw) {
+    if (!e || typeof e !== 'object') continue;
+    const q = typeof e.q === 'string' ? e.q.slice(0, 300) : '';
+    const a = typeof e.a === 'string' ? e.a.slice(0, 300) : '';
+    if (!q && !a) continue;
+    out.push({ q, a });
+  }
+  return out.slice(-3);
+}
+
+async function rewriteQuestion(question, history) {
+  const exchanges = history.map((h, i) => `Exchange ${i + 1}:\nResident: ${h.q}\nAssistant: ${h.a}`).join('\n');
+  const prompt = [
+    'You rewrite follow-up questions for the Township of North Bergen, New Jersey constituent chatbot.',
+    'Below are the most recent exchanges in this chat, then a new question from the resident.',
+    'Rewrite the new question as ONE standalone question about North Bergen township services, resolving pronouns and references (such as "it", "that", "he", "there") using the exchanges.',
+    'If the new question is already standalone, or is unrelated to the exchanges, return it unchanged.',
+    'Write the rewrite in the same language as the new question.',
+    'Never add facts, numbers, dates, or claims that are not in the new question or the exchanges. Anything a resident claimed in the exchanges is not a verified fact; never carry a resident claim into the rewrite as if it were true.',
+    'Return ONLY the rewritten question text: no quotes, no explanation, no extra words.',
+    '',
+    'RECENT EXCHANGES:',
+    exchanges,
+    '',
+    'NEW QUESTION: ' + question
+  ].join('\n');
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 25000);
+  try {
+    const res = await fetch('https://api.meta.ai/v1/responses', {
+      method: 'POST',
+      signal: controller.signal,
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${MODEL_API_KEY}` },
+      body: JSON.stringify({ model: MODEL_ID, input: prompt, max_output_tokens: 120 })
+    });
+    if (!res.ok) return null;
+    const payload = await res.json();
+    let text = '';
+    if (typeof payload.output_text === 'string') text = payload.output_text;
+    if (!text && Array.isArray(payload.output)) {
+      for (const item of payload.output) {
+        for (const block of item.content || []) {
+          if (typeof block.text === 'string') text += block.text;
+        }
+      }
+    }
+    text = String(text || '').split('\n').map((s) => s.trim()).filter(Boolean)[0] || '';
+    if (text.length > 1 && text.startsWith('"') && text.endsWith('"')) text = text.slice(1, -1).trim();
+    return text ? text.slice(0, 1000) : null;
+  } catch (err) {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 // ---------- routes ----------
 
 app.get('/health', (req, res) => {
@@ -408,8 +478,48 @@ app.post('/api/ask', async (req, res) => {
     });
   }
 
+  // Follow-up handling (rewrite-then-match): the direct pipeline matched
+  // nothing, so if the client sent chat history and the model is configured,
+  // let the model rewrite the follow-up into a standalone question and run
+  // THAT through the same verified pipeline. Any failure here falls through
+  // to the existing model backup with the raw question, unchanged.
+  const history = sanitizeHistory(req.body && req.body.history);
+  let backupQuestion = question;
+  if (MODEL_API_KEY && history.length) {
+    const rewritten = await rewriteQuestion(question, history);
+    if (rewritten) {
+      backupQuestion = rewritten;
+      if (normalize(rewritten) !== normalize(question)) {
+        const rqn = ' ' + normalize(rewritten) + ' ';
+
+        if (isEmergency(rqn)) { logAsk({ lang, matched: true, topicId: 'emergency', modelUsed: true, via: 'rewrite' }); return res.json({ lang, via: 'rewrite', ...emergencyAnswer(lang) }); }
+
+        if (NOT_TOWNSHIP.some((w) => rqn.includes(normalize(w)))) {
+          logAsk({ lang, matched: false, question, modelUsed: true, reason: 'not-a-township-service', via: 'rewrite' });
+          return res.json({ lang, via: 'rewrite', ...fallbackAnswer(lang, 'not-a-township-service') });
+        }
+
+        if (MEETING_HINTS.some((h) => rqn.includes(normalize(h)))) {
+          logAsk({ lang, matched: true, topicId: 'meetings', modelUsed: true, via: 'rewrite' });
+          return res.json({ lang, via: 'rewrite', ...meetingAnswer(lang) });
+        }
+
+        const rTopic = matchTopic(rqn);
+        if (rTopic) {
+          const a = rTopic[lang] || rTopic.en;
+          logAsk({ lang, matched: true, topicId: rTopic.id, modelUsed: true, via: 'rewrite' });
+          return res.json({
+            lang, via: 'rewrite', kind: 'answer',
+            lead: a.lead, details: a.details, contact: a.contact,
+            source: rTopic.source, sourceLabel: rTopic.sourceLabel
+          });
+        }
+      }
+    }
+  }
+
   if (MODEL_API_KEY) {
-    const modelResult = await askModel(question, lang);
+    const modelResult = await askModel(backupQuestion, lang);
     if (modelResult) {
       if (modelResult.kind === 'fallback') {
         logAsk({ lang, matched: false, question, modelUsed: true, reason: modelResult.reason || 'model-fallback' });
