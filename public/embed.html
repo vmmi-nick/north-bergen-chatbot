@@ -767,6 +767,18 @@
     div.appendChild(btn);
   }
 
+  /* In-memory chat history for follow-up questions: the last 3 completed
+     Q&A exchanges, sent with each ask so the server can rewrite a follow-up
+     into a standalone question. Memory only: nothing is stored, and a
+     reload or new chat starts empty. Report wizard steps are not Q&A
+     exchanges and are never recorded (ask() routes them away above). */
+  var chatHistory=[];
+  function recordExchange(q, data){
+    var a=(data && data.topicId) ? String(data.topicId) : String((data && data.lead) || '').slice(0,160);
+    chatHistory.push({ q:String(q).slice(0,300), a:a });
+    while (chatHistory.length>3) chatHistory.shift();
+  }
+
   function ask(text){
     var q=(text||'').trim(); if(!q) return;
     if (reportState){ handleFlowText(q); return; }
@@ -774,9 +786,9 @@
     var btn=document.getElementById('sendbtn'); btn.disabled=true;
     var thinking=document.createElement('div'); thinking.className='msg bot'; thinking.textContent=STR[lang].thinking;
     chat.appendChild(thinking); scrollChat();
-    fetch('/api/ask', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({question:q, lang:lang}) })
+    fetch('/api/ask', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({question:q, lang:lang, history:chatHistory}) })
       .then(function(r){ return r.json(); })
-      .then(function(data){ thinking.remove(); addBot(data); })
+      .then(function(data){ thinking.remove(); addBot(data); recordExchange(q, data); })
       .catch(function(){ thinking.remove(); addBot({lead: lang==='es' ? 'Lo siento, algo salió mal. Llame a la Mesa de Ayuda del municipio al 201-875-9110.' : 'Sorry, something went wrong. Please call the Township Help Desk at 201-875-9110.', details:[], contact:[]}); })
       .finally(function(){ btn.disabled=false; });
   }
