@@ -318,9 +318,11 @@ async function callModel(prompt, maxOutputTokens) {
     if (!res.ok) {
       let body = '';
       try { body = String(await res.text()).replace(/\s+/g, ' ').trim().slice(0, 300); } catch (e) { /* body unreadable */ }
-      console.error(`model-call failed: status=${res.status} body=${body}`);
+      const reqId = res.headers.get('x-request-id') || res.headers.get('request-id') || '(none)';
+      console.error(`model-call failed: status=${res.status} request-id=${reqId} body=${body}`);
       return null;
     }
+    
     const payload = await res.json();
     let text = '';
     if (typeof payload.output_text === 'string') text = payload.output_text;
