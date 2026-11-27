@@ -543,4 +543,24 @@ app.get('/api/admin/unanswered', (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`North Bergen chatbot listening on port ${PORT}; model configured: ${Boolean(MODEL_API_KEY)}`);
+  // One-time diagnostic: list the models this API key can actually use, so a
+  // model_not_found failure names its own fix in the logs. Never logs the key.
+  if (MODEL_API_KEY) {
+    fetch('https://api.meta.ai/v1/models', { headers: { Authorization: `Bearer ${MODEL_API_KEY}` } })
+      .then(async (res) => {
+        const body = await res.text();
+        if (!res.ok) {
+          console.log(`model-list: status=${res.status} body=${body.replace(/\s+/g, ' ').slice(0, 300)}`);
+          return;
+        }
+        try {
+          const parsed = JSON.parse(body);
+          const ids = (parsed.data || []).map((m) => m.id).filter(Boolean);
+          console.log(`model-list: configured=${MODEL_ID} available=${ids.join(',') || '(none listed)'}`);
+        } catch (e) {
+          console.log(`model-list: status=${res.status} unparsable body=${body.replace(/\s+/g, ' ').slice(0, 300)}`);
+        }
+      })
+      .catch((err) => console.log(`model-list: error=${(err && err.name) || 'unknown'}`));
+  }
 });
