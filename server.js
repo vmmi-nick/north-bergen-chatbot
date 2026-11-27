@@ -557,6 +557,7 @@ app.listen(PORT, () => {
           const parsed = JSON.parse(body);
           const ids = (parsed.data || []).map((m) => m.id).filter(Boolean);
           console.log(`model-list: configured=${MODEL_ID} available=${ids.join(',') || '(none listed)'}`);
+          if (!ids.length) console.log(`model-list-raw: ${body.replace(/\s+/g, ' ').slice(0, 600)}`);
         } catch (e) {
           console.log(`model-list: status=${res.status} unparsable body=${body.replace(/\s+/g, ' ').slice(0, 300)}`);
         }
