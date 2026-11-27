@@ -300,6 +300,50 @@ function buildModelContext() {
   return facts.join('\n\n');
 }
 
+// Shared Meta Model API call for askModel and rewriteQuestion: returns the
+// response text, or null on any failure. Failure diagnostics are permanent
+// and deliberately minimal: one console.error line per failure, which lands
+// in the Render service logs. They never include the API key, the
+// Authorization header, the prompt, or the question text.
+async function callModel(prompt, maxOutputTokens) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 25000);
+  try {
+    const res = await fetch('https://api.meta.ai/v1/responses', {
+      method: 'POST',
+      signal: controller.signal,
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${MODEL_API_KEY}` },
+      body: JSON.stringify({ model: MODEL_ID, input: prompt, max_output_tokens: maxOutputTokens })
+    });
+    if (!res.ok) {
+      let body = '';
+      try { body = String(await res.text()).replace(/\s+/g, ' ').trim().slice(0, 300); } catch (e) { /* body unreadable */ }
+      console.error(`model-call failed: status=${res.status} body=${body}`);
+      return null;
+    }
+    const payload = await res.json();
+    let text = '';
+    if (typeof payload.output_text === 'string') text = payload.output_text;
+    if (!text && Array.isArray(payload.output)) {
+      for (const item of payload.output) {
+        for (const block of item.content || []) {
+          if (typeof block.text === 'string') text += block.text;
+        }
+      }
+    }
+    if (!text.trim()) {
+      console.error(`model-call empty: keys=${Object.keys(payload || {}).join(',')}`);
+    }
+    return text;
+  } catch (err) {
+    const label = err && err.name && err.name !== 'Error' ? err.name : (err && err.message) || 'unknown error';
+    console.error(`model-call error: ${label}`);
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function askModel(question, lang) {
   const fallbackText = lang === 'es'
     ? `No tengo una respuesta verificada para eso. Llame a la Mesa de Ayuda del municipio al ${HELP_DESK}.`
@@ -320,43 +364,20 @@ async function askModel(question, lang) {
     'QUESTION: ' + question
   ].join('\n');
 
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 25000);
-  try {
-    const res = await fetch('https://api.meta.ai/v1/responses', {
-      method: 'POST',
-      signal: controller.signal,
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${MODEL_API_KEY}` },
-      body: JSON.stringify({ model: MODEL_ID, input: prompt, max_output_tokens: 500 })
-    });
-    if (!res.ok) return null;
-    const payload = await res.json();
-    let text = '';
-    if (typeof payload.output_text === 'string') text = payload.output_text;
-    if (!text && Array.isArray(payload.output)) {
-      for (const item of payload.output) {
-        for (const block of item.content || []) {
-          if (typeof block.text === 'string') text += block.text;
-        }
-      }
-    }
-    text = text.trim();
-    if (!text) return null;
-    if (text === fallbackText) return fallbackAnswer(lang, 'model-insufficient');
-    return {
-      kind: 'model',
-      lead: text.split('\n')[0],
-      details: text.split('\n').slice(1).map((s) => s.trim()).filter(Boolean),
-      contact: [
-        { label: lang === 'es' ? 'Mesa de Ayuda del municipio' : 'Township Help Desk', value: HELP_DESK, href: `tel:+1${HELP_DESK.replace(/-/g, '')}` }
-      ],
-      source: null, sourceLabel: null
-    };
-  } catch (err) {
-    return null;
-  } finally {
-    clearTimeout(timer);
-  }
+  const raw = await callModel(prompt, 500);
+  if (raw === null) return null;
+  const text = raw.trim();
+  if (!text) return null;
+  if (text === fallbackText) return fallbackAnswer(lang, 'model-insufficient');
+  return {
+    kind: 'model',
+    lead: text.split('\n')[0],
+    details: text.split('\n').slice(1).map((s) => s.trim()).filter(Boolean),
+    contact: [
+      { label: lang === 'es' ? 'Mesa de Ayuda del municipio' : 'Township Help Desk', value: HELP_DESK, href: `tel:+1${HELP_DESK.replace(/-/g, '')}` }
+    ],
+    source: null, sourceLabel: null
+  };
 }
 
 // ---------- follow-up rewrite (rewrite-then-match) ----------
@@ -399,34 +420,11 @@ async function rewriteQuestion(question, history) {
     'NEW QUESTION: ' + question
   ].join('\n');
 
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 25000);
-  try {
-    const res = await fetch('https://api.meta.ai/v1/responses', {
-      method: 'POST',
-      signal: controller.signal,
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${MODEL_API_KEY}` },
-      body: JSON.stringify({ model: MODEL_ID, input: prompt, max_output_tokens: 120 })
-    });
-    if (!res.ok) return null;
-    const payload = await res.json();
-    let text = '';
-    if (typeof payload.output_text === 'string') text = payload.output_text;
-    if (!text && Array.isArray(payload.output)) {
-      for (const item of payload.output) {
-        for (const block of item.content || []) {
-          if (typeof block.text === 'string') text += block.text;
-        }
-      }
-    }
-    text = String(text || '').split('\n').map((s) => s.trim()).filter(Boolean)[0] || '';
-    if (text.length > 1 && text.startsWith('"') && text.endsWith('"')) text = text.slice(1, -1).trim();
-    return text ? text.slice(0, 1000) : null;
-  } catch (err) {
-    return null;
-  } finally {
-    clearTimeout(timer);
-  }
+  const raw = await callModel(prompt, 120);
+  if (raw === null) return null;
+  let text = String(raw || '').split('\n').map((s) => s.trim()).filter(Boolean)[0] || '';
+  if (text.length > 1 && text.startsWith('"') && text.endsWith('"')) text = text.slice(1, -1).trim();
+  return text ? text.slice(0, 1000) : null;
 }
 
 // ---------- routes ----------
